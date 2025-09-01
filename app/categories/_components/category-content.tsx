@@ -4,13 +4,14 @@ import { Skeleton } from "@/components/ui/skeleton"; // <-- import skeleton
 import { useCategories } from "@/hooks/use-categories";
 import { dbCategory } from "@/types/type";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 
-interface Props {
-    currentPage:number;
-}
 
-export const CategoryContent = ({currentPage}:Props) => {
+export const CategoryContent = () => {
+    const searchParams = useSearchParams();
+  const pageStr = searchParams.get("page");
+  const currentPage = Number(pageStr) || 1;
     
 const { data: categories, loading } = useCategories(currentPage);
     return (
