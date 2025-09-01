@@ -1,15 +1,17 @@
 "use client";
 
-import { Suspense } from "react";
 import { HeadingTitle } from "@/components/heading-title";
 import { CategoryCard } from "@/components/ui/category-card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton"; // <-- import skeleton
 import { useCategories } from "@/hooks/use-categories";
 import { dbCategory } from "@/types/type";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
-function CategoryContent() {
+
+export const dynamic = "force-dynamic";
+
+const CategoryPage = () => {
   const searchParams = useSearchParams();
   const pageStr = searchParams.get("page");
   const currentPage = Number(pageStr) || 1;
@@ -24,12 +26,13 @@ function CategoryContent() {
         {loading ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
             {Array.from({ length: 8 }).map((_, i) => (
-              <div className="flex flex-col items-center" key={i}>
-                {/* Circle Image */}
-                <Skeleton className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full" />
-                {/* Title */}
-                <Skeleton className="mt-3 h-4 w-20 sm:w-24 md:w-28 rounded" />
-              </div>
+             <div className="flex flex-col items-center" key={i}>
+      {/* Circle Image */}
+      <Skeleton className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full" />
+      
+      {/* Title */}
+      <Skeleton className="mt-3 h-4 w-20 sm:w-24 md:w-28 rounded" />
+    </div>
             ))}
           </div>
         ) : categories?.data && categories?.data.length > 0 ? (
@@ -81,26 +84,6 @@ function CategoryContent() {
       </div>
     </div>
   );
-}
+};
 
-export default function CategoryPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen py-10 px-4">
-          <HeadingTitle title="Browse Categories" />
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div className="flex flex-col items-center" key={i}>
-                <Skeleton className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full" />
-                <Skeleton className="mt-3 h-4 w-20 sm:w-24 md:w-28 rounded" />
-              </div>
-            ))}
-          </div>
-        </div>
-      }
-    >
-      <CategoryContent />
-    </Suspense>
-  );
-}
+export default CategoryPage;
