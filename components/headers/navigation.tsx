@@ -1,62 +1,74 @@
-import { Button } from "@/components/ui/button";
-import { navLinks } from "@/data";
-import { AlignLeft, ShoppingCart } from "lucide-react";
-import Link from "next/link";
-import { Badge } from "../ui/badge";
+"use client"
+
+import { Button } from "@/components/ui/button"
+import { navLinks } from "@/data"
+import { ShoppingCart, Truck, User2 } from "lucide-react"
+import Link from "next/link"
+import { Badge } from "../ui/badge"
+import { BiCategory } from "react-icons/bi"
+import { useCart, useOpenStore } from "@/hooks/use-store"
+import { useRouter } from "next/navigation"
 
 
-const headerActions = [
-  {
-    icon: ShoppingCart,
-    label: "Cart",
-    count: 1,
-  },
-];
 
 export function Navigation() {
+  const router = useRouter()
+  const { setOpen } = useOpenStore()
+  const { cartItems} = useCart();
+
   return (
-    <div className="fixed top-28 left-0 right-0 z-50  backdrop-blur-lg border-b shadow-sm hidden lg:block">
+    <div className="fixed top-[81px] left-0 right-0 z-50 backdrop-blur-lg border-b shadow-sm hidden lg:block">
       <div className="px-4 sm:px-6 lg:px-8 lg:py-4 max-w-[120rem] mx-auto">
-        <div className="flex items-center justify-between h-12">
-        
+        <div className="flex items-center justify-between">
+        <p className="flex items-center gap-x-0.5 text-sm font-semibold text-gray-700">  <BiCategory className="mr-2 size-4" />
+            Categories</p>
 
-        
-
-            <Button className="px-6 py-2 rounded-md">
-              <AlignLeft className="mr-2 h-4 w-4" />
-              Categories
-            </Button>
-
-            <nav className="flex space-x-8">
-              {navLinks.map((link, index) => (
-                <Link
-                  key={index}
-                  href={link.href}
-                  className="text-gray-700 hover:text-primary font-medium"
-                >
-                  {link.name}
-                </Link>
-              ))}
-            </nav>
-
-                 {/* Action Icons */}
-          <div className="flex  items-center space-x-6">
-            {headerActions.map(({ icon: Icon, label, count }, index) => (
-              <div key={index} className="relative text-center">
-                <Icon className="size-6 text-gray-600" />
-                {count > 0 && (
-                  <Badge className="absolute -top-2 -right-2 h-5 w-5 rounded-full text-xs flex items-center justify-center p-0">
-                    {count}
-                  </Badge>
-                )}
-                <span className="block text-xs text-gray-600 mt-1">{label}</span>
-              </div>
+          <nav className="flex space-x-8">
+            {navLinks.map((link, index) => (
+              <Link
+                key={index}
+                href={link.href}
+                className="text-gray-700 hover:text-primary font-medium"
+              >
+                {link.name}
+              </Link>
             ))}
-          </div>
+          </nav>
 
-       
+          {/* Action Icons */}
+          <div className="flex items-center space-x-6 font-semibold">
+            <button
+    onClick={() => setOpen(true)} // ✅ open cart sheet
+    className="relative text-center flex flex-col gap-y-1 items-center cursor-pointer hover:scale-110 transition-all"
+  >
+    <ShoppingCart className="size-6" />
+    {cartItems && cartItems.length > 0 && (
+      <Badge className="absolute -top-2 -right-2 h-5 w-5 rounded-full text-xs flex items-center justify-center p-0">
+        {cartItems.length}
+      </Badge>
+    )}
+    <span className="block text-xs">Cart</span>
+  </button>
+
+  {/* 🚚 Track Order Button */}
+  <button
+    onClick={() => router.push('/tracking')} 
+    className="relative text-center flex flex-col gap-y-1 items-center cursor-pointer hover:scale-110 transition-all"
+  >
+    <Truck className="size-6" />
+    <span className="block text-xs">Track Order</span>
+  </button>
+
+            <Link
+              href={"/sign-up"}
+              className="text-center flex flex-col gap-y-1 items-center"
+            >
+              <User2 />
+              <span className="text-xs block">Sign Up</span>
+            </Link>
+          </div>
         </div>
       </div>
     </div>
-  );
+  )
 }

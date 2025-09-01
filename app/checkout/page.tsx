@@ -1,160 +1,200 @@
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent } from "@/components/ui/card"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Textarea } from "@/components/ui/textarea"
+"use client";
 
-// React Icons
-import { FaShoppingCart } from "react-icons/fa"
+import { useState, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { FaShoppingCart } from "react-icons/fa";
+import { useCart, CartItem } from "@/hooks/use-store";
+import { useProducts } from "@/hooks/use-products";
+import CartShippingStep from "./_components/cart-step";
+import PaymentStep from "./_components/payment-step";
+import { ConfirmStep } from "./_components/confirm-step";
+import { InvoiceOrder } from "./_components/invoice-order";
 
 export default function CheckoutPage() {
+  const searchParams = useSearchParams();
+  const productId = searchParams.get("productId");
+
+  const { cartItems } = useCart();
+  const { data: products, loading } = useProducts();
+
+  const [step, setStep] = useState(1);
+  const [shippingData, setShippingData] = useState<any>(null);
+  const [paymentMethod, setPaymentMethod] = useState<string | "">("");
+
+  // ✅ new state for invoice/order response
+  const [orderResponse, setOrderResponse] = useState<any>(null);
+
+  // ✅ unify items
+  const checkoutItems: CartItem[] = useMemo(() => {
+    if (productId && products) {
+      const found = products.data.find((p) => p.id === productId);
+      return found ? [{ ...found, cartQuantity: 1 }] : [];
+    }
+    return cartItems;
+  }, [productId, products, cartItems]);
+
+  // ✅ totals
+  const subTotal = checkoutItems.reduce(
+    (acc, item) => acc + item.price * item.cartQuantity,
+    0
+  );
+
+  const totalDiscount = checkoutItems.reduce(
+    (acc, item) =>
+      acc + (item.price - (item.discountPrice ?? item.price)) * item.cartQuantity,
+    0
+  );
+
+  const total = subTotal - totalDiscount;
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        {/* Progress steps */}
-        <div className="mb-8">
-         <div className="flex items-center justify-between max-w-2xl mx-auto">
-  {/* Step 1 */}
-  <div className="flex flex-col items-center relative">
-    <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center text-white">
-      <FaShoppingCart className="w-5 h-5" />
-    </div>
-    <span className="text-sm mt-2 text-orange-500 font-medium">Cart</span>
-    <div className="hidden md:block absolute top-5 left-full ml-2 w-12 h-1 bg-orange-500"></div>
-  </div>
+    <div className="min-h-screen">
+      <main className="max-w-7xl mx-auto px-4 py-10">
+       
 
-  {/* Step 2 */}
-  <div className="flex flex-col items-center relative">
-    <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center text-white">
-      <span className="text-sm font-bold">2</span>
-    </div>
-    <span className="text-sm mt-2 text-orange-500 font-medium text-center">
-      Shipping & Billing
-    </span>
-    <div className="hidden md:block absolute top-5 left-full -ml-6 w-12 h-1 bg-gray-300"></div>
-  </div>
-
-  {/* Step 3 */}
-  <div className="flex flex-col items-center relative">
-    <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center text-gray-500">
-      <span className="text-sm font-bold">3</span>
-    </div>
-    <span className="text-sm mt-2 text-gray-500">Payment</span>
-    <div className="hidden md:block absolute top-5 left-full ml-2 w-12 h-1 bg-gray-300"></div>
-  </div>
-
-  {/* Step 4 */}
-  <div className="flex flex-col items-center">
-    <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center text-gray-500">
-      <span className="text-sm font-bold">4</span>
-    </div>
-    <span className="text-sm mt-2 text-gray-500">Confirmation</span>
-  </div>
-</div>
-
+    {
+      orderResponse ? <InvoiceOrder order={orderResponse}/> : (
+        <>
+          <div className="mb-10">
+          <div className="flex items-center justify-between max-w-3xl mx-auto relative">
+            {[1, 2, 3].map((s, idx) => (
+              <div key={s} className="flex flex-col items-center flex-1 relative">
+                <div
+                  className={`w-12 h-12 rounded-full flex items-center justify-center font-bold shadow-md transition-colors duration-300 ${
+                    step >= s
+                      ? "bg-primary text-white"
+                      : "bg-white border border-gray-300 text-gray-500"
+                  }`}
+                >
+                  {s === 1 ? <FaShoppingCart /> : s}
+                </div>
+                <span
+                  className={`text-sm mt-2 font-medium ${
+                    step >= s ? "text-primary" : "text-gray-500"
+                  }`}
+                >
+                  {s === 1 && "Cart & Shipping"}
+                  {s === 2 && "Payment"}
+                  {s === 3 && "Confirm"}
+                </span>
+                {idx < 2 && (
+                  <div
+                    className={`absolute top-6 left-full w-full h-[2px] ${
+                      step > s ? "bg-primary" : "bg-gray-300"
+                    }`}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left column - Forms */}
+          {/* Left Content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Delivery Area Selection */}
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="text-lg font-semibold mb-4">Select Delivery Area*</h3>
-                <RadioGroup defaultValue="dhaka-city" className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="dhaka-city" id="dhaka-city" />
-                    <Label htmlFor="dhaka-city">ঢাকা সিটির ভিতরে</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="chittagong-city" id="chittagong-city" />
-                    <Label htmlFor="chittagong-city">চট্টগ্রাম সিটির ভিতরে</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="outside-cities" id="outside-cities" />
-                    <Label htmlFor="outside-cities">ঢাকা ও চট্টগ্রাম সিটির বাইরে</Label>
-                  </div>
-                </RadioGroup>
-              </CardContent>
-            </Card>
+            {step === 1 && (
+              <CartShippingStep
+                items={checkoutItems}
+                loading={loading}
+                subTotal={subTotal}
+                totalDiscount={totalDiscount}
+                total={total}
+                onNext={(data) => {
+                  setShippingData(data);
+                  setStep(2);
+                }}
+              />
+            )}
 
-            {/* Billing Info */}
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="text-lg font-semibold mb-4">Billing Info</h3>
-                <div className="space-y-4">
-                  <Input placeholder="Full Name*" className="w-full" />
-                  <Input placeholder="Phone Number*" className="w-full" />
-                  <Textarea placeholder="Full Address*" className="w-full min-h-[100px]" />
-                  <Button className="w-full py-3">Continue</Button>
-                </div>
-              </CardContent>
-            </Card>
+            {step === 2 && (
+              <PaymentStep
+                subTotal={subTotal}
+                totalDiscount={totalDiscount}
+                total={total}
+                onNext={() => setStep(3)}
+                onBack={() => setStep(1)}
+                selectedPayment={paymentMethod}   
+                onSelectPayment={(method) => setPaymentMethod(method)}
+              />
+            )}
+
+            {step === 3 && shippingData && (
+              <ConfirmStep
+                customar={shippingData}
+                items={checkoutItems}
+                subTotal={subTotal}
+                totalDiscount={totalDiscount}
+                total={total}
+                paymentMethod={paymentMethod} 
+                onBack={() => setStep(2)}
+                onOrderSuccess={setOrderResponse}  // ✅ pass setter
+              />
+            )}
+
+            {/* ✅ Show Invoice after order success */}
+            {orderResponse && (
+              <div className="p-6 border rounded-xl bg-white shadow-md">
+                <h3 className="text-lg font-bold text-green-600 mb-2">
+                  🎉 Order Placed Successfully!
+                </h3>
+                <p><strong>Invoice ID:</strong> {orderResponse.id}</p>
+                <p><strong>Status:</strong> {orderResponse.status}</p>
+                <p><strong>Total Paid:</strong> BDT {orderResponse.total}</p>
+              </div>
+            )}
           </div>
 
-          {/* Right column - Cart Summary */}
+          {/* Right Summary */}
           <div className="space-y-6">
-            <Card>
+            <Card className="rounded-2xl shadow-md border border-gray-200">
+              <CardHeader>
+                <h3 className="text-xl font-semibold">Cart Summary</h3>
+              </CardHeader>
               <CardContent className="p-6">
-                <h3 className="text-lg font-semibold mb-4">Items In Your Cart :</h3>
-
-                <div className="space-y-4">
-                  <div className="flex justify-between items-start">
-                    <span className="font-medium">Product</span>
-                    <span className="font-medium">Total</span>
+                {loading ? (
+                  <div className="space-y-3">
+                    {[...Array(5)].map((_, i) => (
+                      <div key={i} className="flex justify-between">
+                        <Skeleton className="h-4 w-24" />
+                        <Skeleton className="h-4 w-16" />
+                      </div>
+                    ))}
                   </div>
-
-                  <div className="flex items-center gap-3 py-3 border-b">
-                    <img src="/bangladeshi-food.png" alt="Product" className="w-12 h-12 rounded" />
-                    <div className="flex-1">
-                      <div className="text-sm">শাহজাদি প্রিমিয়া ইউজা (৫০০ গ্রাম)</div>
-                      <div className="text-xs text-gray-500">Qty: 1</div>
+                ) : checkoutItems.length === 0 ? (
+                  <p className="text-gray-500 text-center py-6">
+                    {productId ? "No product found." : "Your cart is empty."}
+                  </p>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-sm">
+                      <span>Sub Total:</span>
+                      <span>BDT {subTotal}</span>
                     </div>
-                    <div className="text-right">
-                      <div className="font-medium">Tk240</div>
+                    <div className="flex justify-between text-sm text-green-600">
+                      <span>Discount:</span>
+                      <span>- BDT {totalDiscount}</span>
+                    </div>
+                    <div className="flex justify-between font-semibold text-lg pt-3 border-t">
+                      <span>Total:</span>
+                      <span className="">BDT {total}</span>
                     </div>
                   </div>
-                </div>
-
-                <div className="space-y-2 mt-4 pt-4 border-t">
-                  <div className="flex justify-between">
-                    <span>Sub Total:</span>
-                    <span>Tk240</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>TAX:</span>
-                    <span>Tk0</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>VAT:</span>
-                    <span>Tk0</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Discount:</span>
-                    <span>Tk0</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Delivery Charge:</span>
-                    <span>Tk0</span>
-                  </div>
-                  <div className="flex justify-between font-semibold text-lg pt-2 border-t">
-                    <span>Total:</span>
-                    <span>Tk240</span>
-                  </div>
-                </div>
-
-                <div className="mt-6">
-                  <div className="flex gap-2 flex-col sm:flex-row">
-                    <Input placeholder="Please enter promo code" className="flex-1" />
-                    <Button className="px-4 w-full sm:w-auto">Apply Discount</Button>
-                  </div>
-                </div>
+                )}
               </CardContent>
             </Card>
           </div>
         </div>
+        
+        </>
+
+      )
+    }
+
+      
+
       </main>
     </div>
-  )
+  );
 }

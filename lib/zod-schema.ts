@@ -1,6 +1,19 @@
-import z from "zod";
+import z, { email } from "zod";
 
-// ✅ Order Form Schema
+
+
+export const registerSchema = z.object({
+  name: z.string().min(1, { message: "নামটি অবশ্যই দিতে হবে।" }),
+  email: z.string().email({ message: "সঠিক ইমেইল ঠিকানা দিন।" }),
+  password: z.string().min(4, { message: "পাসওয়ার্ড কমপক্ষে ৪ অক্ষরের হতে হবে।" }),
+});
+
+export const logInSchema = z.object({
+  email: z.string().email({ message: "সঠিক ইমেইল ঠিকানা দিন।" }),
+  password: z.string().min(4, { message: "পাসওয়ার্ড কমপক্ষে ৪ অক্ষরের হতে হবে।" }),
+});
+
+
 export const orderFormSchema = z.object({
   paymentMethod: z.string().min(1, "পেমেন্ট মেথড আবশ্যক"),
   isPaid: z.boolean().default(false),

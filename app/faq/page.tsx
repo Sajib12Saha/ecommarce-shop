@@ -9,11 +9,11 @@ const FaqPage = () => {
 <Accordion
   type="multiple"
   defaultValue={FAQITEMS.map((_, index) => `item-${index}`)} 
-  className="w-full space-y-10"
+  className="w-full max-w-2xl space-y-10"
 >
   {FAQITEMS.map((item, index) => (
     <AccordionItem key={index} value={`item-${index}`}>
-      <AccordionTrigger className="bg-primary px-2 text-white  lg:text-lg">
+      <AccordionTrigger className="bg-primary px-4 text-white  lg:text-lg">
         {item.question}
       </AccordionTrigger>
       <AccordionContent className="px-2 py-4 text-md lg:text-base">

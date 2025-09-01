@@ -1,69 +1,151 @@
-"use client"
+"use client";
 
-import React, { useState } from "react"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Minus, Plus, Search } from "lucide-react"
-import RelatedProducts from "../_components/relatedProducts"
+import React, { useState } from "react";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Minus, Plus, Search } from "lucide-react";
+import RelatedProducts from "../_components/relatedProducts";
+import { useProducts } from "@/hooks/use-products";
+import { dbProduct } from "@/types/type";
+import { useCart } from "@/hooks/use-store";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useCategories } from "@/hooks/use-categories";
+import { useRouter } from "next/navigation";
 
 type Props = {
-  params: Promise<{ productId: string }>
-}
+  params: Promise<{ productId: string }>;
+};
 
 const ProductIdPage = ({ params }: Props) => {
-  const { productId } = React.use(params) // unwrap params for Next.js 15+
-  const [quantity, setQuantity] = useState(1)
-  const [selectedImage, setSelectedImage] = useState(0)
+  const { productId } = React.use(params);
+  const [selectedImage, setSelectedImage] = useState(0);
+  const { data: products, loading } = useProducts();
+  const { cartItems, addItem } = useCart();
+  const { data: categories, loading: categoryLoading } = useCategories();
+  const router = useRouter();
 
-  const productImages = ["/brown-rice-container.png", "/brown-rice-container.png"]
+  if (loading || categoryLoading) {
+    return (
+       <div className="p-6 px-8 max-w-7xl w-full mx-auto space-y-8">
+      {/* Product ID Skeleton */}
+      <Skeleton className="h-6 w-40 rounded" />
 
-  const relatedProducts = [
-    "/brown-rice-bowl.png",
-    "/yellow-rice-bowl.png",
-    "/white-rice-bowl.png",
-    "/placeholder-tugdz.png",
-    "/placeholder-n00h9.png",
-  ]
+      {/* Product Layout Skeleton */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        {/* Images */}
+        <div className="space-y-4">
+          <Skeleton className="w-full h-[400px] rounded-xl" />
+          <div className="flex gap-3">
+            {[...Array(3)].map((_, i) => (
+              <Skeleton key={i} className="w-16 h-16 rounded-lg" />
+            ))}
+          </div>
+        </div>
 
-  return (
-    <div className="max-w-7xl mx-auto p-6 bg-white">
-      {/* Product ID */}
-      <div className="mb-4 p-2 bg-gray-100 rounded">
-        <span className="text-sm text-gray-600">Product ID: {productId}</span>
+        {/* Product Details */}
+        <div className="space-y-4">
+          <Skeleton className="h-8 w-3/4" />
+          <Skeleton className="h-6 w-1/4" />
+          <Skeleton className="h-20 w-full" />
+          <Skeleton className="h-6 w-32" />
+          <div className="flex gap-4">
+            <Skeleton className="h-10 w-32" />
+            <Skeleton className="h-10 w-40" />
+          </div>
+        </div>
       </div>
 
-      {/* Product Images and Details */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      {/* Tabs Skeleton */}
+      <div className="space-y-4">
+        <div className="flex gap-4">
+          {[...Array(3)].map((_, i) => (
+            <Skeleton key={i} className="h-10 w-32 rounded-md" />
+          ))}
+        </div>
+        <Skeleton className="h-40 w-full rounded-md" />
+      </div>
+
+      {/* Related Products Skeleton */}
+      <div className="space-y-4">
+        <Skeleton className="h-6 w-52" />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <Skeleton key={i} className="h-48 w-full rounded-lg" />
+          ))}
+        </div>
+      </div>
+    </div>
+    );
+  }
+
+  const product: dbProduct | undefined = products?.data?.find(
+    (p) => p.id === productId
+  );
+
+  if (!product) return <p className="text-center py-10">Product not found.</p>;
+
+  const productImages = product.productImage
+    ? [product.productImage]
+    : ["/placeholder.svg"];
+
+  const productCategory = categories?.data.find(
+    (c) => c.id === product.categoryId
+  );
+
+  const relatedProducts = products?.data?.filter((p) => p.id !== productId).slice(0, 5)
+
+
+  const isInCart = cartItems.some((item) => item.id === product.id);
+
+  return (
+    <div className="p-6 px-8 max-w-7xl w-full mx-auto">
+      {/* Product ID */}
+      <div className="mb-6">
+        <Badge variant="secondary" className="text-xs px-3 py-1">
+          Product ID: {productId}
+        </Badge>
+      </div>
+
+      {/* Product Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-12">
         {/* Product Images */}
         <div className="space-y-4">
-          <div className="relative bg-gray-50 rounded-lg p-4">
+          <div className="relative  rounded-2xl p-4 shadow-sm">
             <Image
-              src={productImages[selectedImage] || "/placeholder.svg"}
-              alt="Product Image"
-              width={400}
-              height={400}
-              className="w-full h-auto rounded-lg"
+              src={productImages[selectedImage]}
+              alt={product.name}
+              width={500}
+              height={500}
+              className="w-full h-auto rounded-xl object-cover"
             />
-            <Button size="icon" variant="ghost" className="absolute top-4 right-4 bg-white/80 hover:bg-white">
+            <Button
+              size="icon"
+              variant="ghost"
+              className="absolute top-4 right-4 bg-white/80 hover:bg-white shadow-sm rounded-full"
+            >
               <Search className="h-4 w-4" />
             </Button>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             {productImages.map((image, index) => (
               <button
                 key={index}
                 onClick={() => setSelectedImage(index)}
-                className={`border-2 rounded-lg p-1 ${selectedImage === index ? "border-primary" : "border-gray-200"}`}
+                className={`border-2 rounded-xl p-1 transition ${
+                  selectedImage === index
+                    ? "border-primary shadow-md"
+                    : "border-gray-200 hover:border-primary/50"
+                }`}
               >
                 <Image
-                  src={image || "/placeholder.svg"}
+                  src={image}
                   alt={`Thumbnail ${index + 1}`}
-                  width={60}
-                  height={60}
-                  className="rounded"
+                  width={70}
+                  height={70}
+                  className="rounded-lg object-cover"
                 />
               </button>
             ))}
@@ -72,68 +154,61 @@ const ProductIdPage = ({ params }: Props) => {
 
         {/* Product Details */}
         <div className="space-y-6">
-          <div>
-            <h1 className="text-2xl font-semibold text-gray-800 mb-2">শাহজাদী কালোজিরার তেল (২ কেজি)</h1>
-            <div className="text-3xl font-bold text-orange-500 mb-4">Tk 350</div>
-            <p className="text-gray-600 leading-relaxed mb-4">
-              শাহজাদী কালোজিরা তেলটি ১০০% খাঁটি প্রাকৃতিক তেল। কালোজিরা তেল অনেক উপকারী একটি তেল। আমাদের এই তেল ১০০% খাঁটি
-              এবং প্রাকৃতিক পদ্ধতিতে তৈরি। এই তেলটি আপনার স্বাস্থ্যের জন্য অত্যন্ত উপকারী এবং নিরাপদ।
-            </p>
+          <h1 className="text-3xl font-bold">{product.name}</h1>
+          <div className="flex items-center gap-3">
+            <span className="text-3xl font-extrabold">
+              BDT {product.discountPrice ?? product.price}
+            </span>
+            {product.discountPrice && (
+              <span className="line-through text-gray-400">
+                BDT {product.price}
+              </span>
+            )}
           </div>
+          <p className="text-gray-600 leading-relaxed">
+            {product.subDescription}
+          </p>
 
           <div>
-            <h3 className="font-semibold mb-2">Categories</h3>
-            <Badge>Rice</Badge>
+            <h3 className="font-semibold mb-2 text-gray-800">Category</h3>
+            <Badge className="bg-green-600">{productCategory?.name}</Badge>
           </div>
 
-          <div className="space-y-4">
-            <div>
-              <span className="font-semibold">QTY</span>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center border rounded-lg">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="h-10 w-10"
-                >
-                  <Minus className="h-4 w-4" />
-                </Button>
-                <span className="px-4 py-2 min-w-[3rem] text-center">{quantity}</span>
-                <Button variant="ghost" size="icon" onClick={() => setQuantity(quantity + 1)} className="h-10 w-10">
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-              <Button>ADD TO CART</Button>
-            </div>
+          {/* Buttons */}
+          <div className="flex items-center gap-4 pt-4">
+            <Button
+              onClick={() => addItem(product)}
+              disabled={isInCart} // ✅ disable if already in cart
+            >
+              {isInCart ? "Already in Cart" : "Add to Cart"}
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => router.push(`/checkout?productId=${product.id}`)}
+            >
+              Buy Now
+            </Button>
           </div>
         </div>
       </div>
 
-      {/* Product Tabs */}
-      <Tabs defaultValue="description" className="w-full">
+
+ <Tabs defaultValue="description" className="w-full">
         <TabsList className="grid w-full grid-cols-3 max-w-md gap-4">
           <TabsTrigger value="description">
             Description
           </TabsTrigger>
           <TabsTrigger value="reviews">Reviews (0)</TabsTrigger>
-          <TabsTrigger value="questions">Questions (0)</TabsTrigger>
+          <TabsTrigger value="comments">Comments (0)</TabsTrigger>
         </TabsList>
 
         <TabsContent value="description" className="mt-6">
           <Card className="border-primary">
             <CardContent className="p-6">
-              <div className="space-y-4 text-gray-700">
-                <p>
-                  ই- শপিং এর মাধ্যমে আমাদের কাছে প্রাকৃতিক তেল পেতে পারবেন। আমাদের সকল তেল ১০০% খাঁটি এবং প্রাকৃতিক।
-                  আমাদের তেলগুলো সম্পূর্ণ প্রাকৃতিক পদ্ধতিতে তৈরি করা হয় এবং কোন প্রকার রাসায়নিক ব্যবহার করা হয় না।
-                </p>
-                <p>
-                  🔸 আমাদের কালোজিরা তেল ১০০% খাঁটি প্রাকৃতিক তেল এবং উৎকৃষ্ট মানের। এই তেলটি আপনার স্বাস্থ্যের জন্য অত্যন্ত
-                  উপকারী এবং নিরাপদ। আমাদের পণ্যটি ব্যবহার করে আপনি নিশ্চিত থাকতে পারেন যে এটি সম্পূর্ণ প্রাকৃতিক এবং খাঁটি।
-                </p>
-              </div>
+               <div
+          className="prose max-w-none text-gray-700 leading-relaxed"
+          dangerouslySetInnerHTML={{ __html: product.description || "" }}
+        />
             </CardContent>
           </Card>
         </TabsContent>
@@ -146,19 +221,23 @@ const ProductIdPage = ({ params }: Props) => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="questions">
+        <TabsContent value="comments">
           <Card>
             <CardContent className="p-6">
-              <p className="text-gray-500">No questions yet.</p>
+              <p className="text-gray-500">No comments yet.</p>
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
 
-      {/* Related Products */}
-      <RelatedProducts products={relatedProducts} />
-    </div>
-  )
-}
 
-export default ProductIdPage
+      {/* Related Products */}
+      <div className="mt-12">
+        <h2 className="text-xl font-semibold mb-4">You may also like</h2>
+        <RelatedProducts products={relatedProducts || []}/>
+      </div>
+    </div>
+  );
+};
+
+export default ProductIdPage;

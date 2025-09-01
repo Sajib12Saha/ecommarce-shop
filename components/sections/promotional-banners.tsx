@@ -23,6 +23,7 @@ export function PromotionalBanners() {
               alt="Ginger"
               fill
               className="object-cover object-center"
+              loading="lazy"
             />
             <div className="absolute inset-0 bg-black/40" />
             <div className="relative z-10 p-6 text-white h-full flex flex-col items-center justify-evenly">
@@ -85,6 +86,7 @@ export function PromotionalBanners() {
                   alt="Organic"
                   fill
                   className="object-cover object-center"
+                  loading="lazy"
                 />
                 <div className="absolute inset-0 bg-black/40" />
                 <div className="relative z-10 p-4 text-white">
@@ -110,6 +112,7 @@ export function PromotionalBanners() {
                   alt="Makeup"
                   fill
                   className="object-cover object-center"
+                  loading="lazy"
                 />
                 <div className="absolute inset-0 bg-black/40" />
                 <div className="relative z-10 p-4 text-white">
