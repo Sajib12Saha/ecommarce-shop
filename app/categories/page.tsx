@@ -2,16 +2,14 @@ import { HeadingTitle } from "@/components/heading-title";
 import { CategoryContent } from "./_components/category-content";
 
 
-interface Props {
-  searchParams?: { [key: string]: string | string[] | undefined }
-}
+export default async function CategoryPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>
+}) {
+  const resolvedSearchParams = await searchParams;
 
-export default async function CategoryPage({ searchParams }: Props) {
-  const page = Array.isArray(searchParams?.page)
-    ? searchParams?.page[0]
-    : searchParams?.page;
-
-  const currentPage = Number(page || "1");
+  const currentPage = Number(resolvedSearchParams?.page || "1");
 
   return (
     <div className="min-h-screen py-10">
