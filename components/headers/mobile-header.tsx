@@ -17,12 +17,19 @@ import { useCart, useOpenStore } from "@/hooks/use-store";
 import { Badge } from "../ui/badge";
 import { Input } from "../ui/input";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 export function MobileHeader() {
   const [isOpen, setIsOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [searchProduct, setSearchProduct] = useState("");
+  const router = useRouter();
   const { setOpen } = useOpenStore();
   const { cartItems } = useCart();
+
+  const handleSearch = () => {
+    router.push(`/products/product?${searchProduct}`)
+  }
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-lg border-b shadow-sm lg:hidden">
@@ -143,11 +150,16 @@ export function MobileHeader() {
     placeholder="Search product..."
     className="pr-10 h-10" // add right padding so text doesn't overlap button
     autoFocus
+    onChange={(value)=> setSearchProduct(value.currentTarget.value)}
+    value={searchProduct}
+
   />
   <Button
     variant="ghost"
     size="icon"
     className="absolute right-1 top-1/2 -translate-y-1/2"
+    type="button"
+    onClick={()=> handleSearch()}
   >
     <Search className="size-5" />
   </Button>

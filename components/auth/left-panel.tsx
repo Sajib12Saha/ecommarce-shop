@@ -52,39 +52,8 @@ export function EcommerceLeftPanel() {
       <div className="absolute top-1/2 right-12 w-16 h-16 bg-white/15 rounded-2xl -rotate-12 backdrop-blur-sm border border-white/20" />
 
       <div className="relative z-10 flex flex-col justify-center px-4 xl:px-8 py-16 text-white">
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-6">
-  
-            <div>
-              <h1 className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-white to-yellow-100 bg-clip-text text-transparent">
-                 Hillora
-              </h1>
-              <div className="h-1 w-20 bg-gradient-to-r from-white to-transparent rounded-full mt-1" />
-            </div>
-          </div>
-          <p className="opacity-90 leading-relaxed font-semibold text-sm">
-            Your premium destination for quality products and exceptional shopping experiences.
-          </p>
+        <div className="mb-8">   
         </div>
-
-      {/* Trust Signals */}
-      <div className="space-y-4 xl:space-y-6 mb-8">
-        {trustSignals.map(({ icon: Icon, title, description }, idx) => (
-          <div
-            key={idx}
-            className="flex items-center gap-4 p-2 bg-white/10 rounded-2xl backdrop-blur-sm border border-white/20 hover:bg-white/15 transition-all duration-300"
-          >
-            <div className="bg-white/20 p-2 lg:p-2 rounded-xl backdrop-blur-sm border border-white/30">
-              <Icon className="size-6" />
-            </div>
-            <div>
-              <h3 className="font-semibold ">{title}</h3>
-              <p className="opacity-80 text-sm lg:text-base">{description}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-
 
       </div>
     </div>

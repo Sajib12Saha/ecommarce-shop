@@ -1,18 +1,19 @@
-"use client";
-
 import { HeadingTitle } from "@/components/heading-title";
 import { CategoryContent } from "./_components/category-content";
+import { getCategories } from "@/actions/category";
 
-const CategoryPage = () => {
+export default async function CategoryPage({ searchParams }: { searchParams?: { page?: string } }) {
+  
+  const currentPage = Number(searchParams?.page || "1");
+
+
 
   return (
     <div className="min-h-screen py-10">
       <div className="px-4 w-full space-y-8">
         <HeadingTitle title="Browse Categories" />
-        <CategoryContent/>
+        <CategoryContent initialPage={currentPage} />
       </div>
     </div>
   );
-};
-
-export default CategoryPage;
+}
