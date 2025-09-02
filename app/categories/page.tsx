@@ -1,12 +1,12 @@
 import { HeadingTitle } from "@/components/heading-title";
 import { CategoryContent } from "./_components/category-content";
-import { getCategories } from "@/actions/category";
 
-interface CategoryPageProps {
+
+interface Props {
   searchParams?: { [key: string]: string | string[] | undefined }
 }
 
-export default async function CategoryPage({ searchParams }: CategoryPageProps) {
+export default async function CategoryPage({ searchParams }: Props) {
   const page = Array.isArray(searchParams?.page)
     ? searchParams?.page[0]
     : searchParams?.page;
