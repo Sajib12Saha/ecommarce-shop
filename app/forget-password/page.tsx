@@ -1,4 +1,4 @@
-import { useSearchParams} from "next/navigation";
+
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ForgotPasswordForm } from "./_components/forgot-password-form";
 

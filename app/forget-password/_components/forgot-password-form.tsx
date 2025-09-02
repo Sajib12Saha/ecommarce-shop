@@ -1,3 +1,5 @@
+"use client";
+
 import { Zap } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -6,9 +8,9 @@ import { Form, FormField } from "@/components/ui/form";
 import { CustomForm } from "@/components/ui/custom-form";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import {useRouter } from "next/navigation";
 import { z } from "zod";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent} from "@/components/ui/card";
 
 
 const emailSchema = z.object({
