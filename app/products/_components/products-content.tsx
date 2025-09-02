@@ -25,11 +25,12 @@ export const ProductsContent = ({
   categoryIds,
 }: Props) => {
   const [currentPage, setCurrentPage] = useState(1);
-
+ const [productName, setProductName] = useState("");
   const searchParams = useSearchParams();
-  const productName = searchParams.get("productName")
-    ? decodeURIComponent(searchParams.get("productName")!)
-    : "";
+      useEffect(() => {
+    const name = searchParams.get("productName");
+    setProductName(name ? decodeURIComponent(name) : "");
+  }, [searchParams]);
 
   const { data: products, loading } = useProducts(
     currentPage,
