@@ -8,16 +8,34 @@ export type ProductsResponse = {
   totalPages: number;
 };
 
-export const getProducts = async (page?: number): Promise<ProductsResponse> => {
-  // If page is provided, use it; otherwise fetch all products
-  const url = page
-    ? `${process.env.NEXT_PUBLIC_ADMIN_URL}/api/products?page=${page}`
-    : `${process.env.NEXT_PUBLIC_ADMIN_URL}/api/products`;
+// Updated function with sorting, search, price & category filter
+export const getProducts = async (
+  page?: number,
+  sortBy?: "price" | "category" | "createdAt",
+  sortOrder?: "asc" | "desc",
+  productName?: string,
+  minPrice?: number,
+  maxPrice?: number,
+  categoryIds?: string[] // new optional filter
+): Promise<ProductsResponse> => {
+  let url = `${process.env.NEXT_PUBLIC_ADMIN_URL}/api/products`;
 
-  const res = await fetch(url, { next:{revalidate:120}});
+  const params = new URLSearchParams();
+
+  if (page) params.append("page", page.toString());
+  if (sortBy) params.append("sortBy", sortBy);
+  if (sortOrder) params.append("sortOrder", sortOrder);
+  if (productName) params.append("productName", encodeURIComponent(productName));
+  if (minPrice !== undefined) params.append("minPrice", minPrice.toString());
+  if (maxPrice !== undefined) params.append("maxPrice", maxPrice.toString());
+  if (categoryIds && categoryIds.length > 0)
+    params.append("categoryIds", categoryIds.join(","));
+
+  if ([...params].length > 0) url += `?${params.toString()}`;
+
+  const res = await fetch(url, { next: { revalidate: 120 } });
 
   if (!res.ok) throw new Error("Failed to load Products");
 
   return await res.json();
 };
-

@@ -18,70 +18,116 @@ import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import {
-  Filter,
-  Tag,
-  DollarSign,
-  Grid3X3,
-  Factory,
-} from "lucide-react";
+import { Tag} from "lucide-react";
+import { useCategories } from "@/hooks/use-categories";
 
-export default function FilterSideBar() {
-  const [price, setPrice] = useState([200, 1600]);
-  const categories = [
-    "Spices",
-    "Rice",
-  ];
-  const brands = ["Brand A", "Brand B", "Brand C"];
+interface Props {
+  sortBy: "price" | "category" | "createdAt";
+  sortOrder: "asc" | "desc";
+  onSortChange: (
+    sortBy: "price" | "category" | "createdAt",
+    sortOrder: "asc" | "desc"
+  ) => void;
+  minPrice?: number;
+  maxPrice?: number;
+  onPriceChange?: (min: number, max: number) => void;
+  categoryIds?: string[];
+  onCategoryChange?: (ids: string[]) => void;
+}
+
+export default function FilterSideBar({
+  sortBy,
+  sortOrder,
+  onSortChange,
+  minPrice = 0,
+  maxPrice = 2000,
+  onPriceChange,
+  categoryIds = [],
+  onCategoryChange,
+}: Props) {
+  const { data: categories, loading } = useCategories();
+
+  // Local price slider state
+  const [price, setPrice] = useState<[number, number]>([minPrice, maxPrice]);
+
+  // Sort dropdown value
+  const sortValue =
+    sortBy === "price" && sortOrder === "desc"
+      ? "price-high"
+      : sortBy === "price" && sortOrder === "asc"
+      ? "price-low"
+      : sortBy === "createdAt"
+      ? "createdAt"
+      : "category";
+
+  const applySort = (value: string) => {
+    if (value === "price-low") onSortChange("price", "asc");
+    if (value === "price-high") onSortChange("price", "desc");
+    if (value === "createdAt") onSortChange("createdAt", "desc");
+    if (value === "category") onSortChange("category", "asc");
+  };
+
+  const applyPrice = () => {
+    onPriceChange?.(price[0], price[1]);
+  };
+
+  const toggleCategory = (id: string, checked: boolean) => {
+    const newCategories = checked
+      ? [...categoryIds, id]
+      : categoryIds.filter((c) => c !== id);
+    onCategoryChange?.(newCategories);
+  };
+
+  const resetFilters = () => {
+    setPrice([0, 2000]);
+    onPriceChange?.(0, 2000);
+    onCategoryChange?.([]);
+    onSortChange("createdAt", "desc");
+  };
 
   return (
     <aside className="w-full lg:w-44 xl:w-60 rounded-2xl shadow-md p-4 space-y-4 hidden lg:block sticky top-2 my-4">
       <div className="flex items-center justify-between border-b pb-3">
         <h2 className="text-lg font-semibold flex items-center gap-2">
-          <Filter className="w-5 h-5 text-orange-500" />
-          Filters
+          <Tag className="w-5 h-5 text-orange-500" /> Filters
         </h2>
-        <Button variant="ghost" size="sm" className="text-xs text-red-500">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-xs text-red-500 font-semibold bg-gray-100 hover:bg-green-600 hover:text-white"
+          onClick={resetFilters}
+        >
           Reset
         </Button>
       </div>
 
-      {/* Accordion filters (all open by default) */}
-      <Accordion
-        type="multiple"
-        defaultValue={["sort", "price", "categories", "brands"]}
-        className="space-y-3"
-      >
-        {/* Sort By */}
+      <Accordion type="multiple" defaultValue={["sort", "price", "categories"]} className="space-y-3">
+        {/* Sort */}
         <AccordionItem value="sort">
-          <AccordionTrigger className="flex items-center gap-2">
-            <Tag className="w-4 h-4 text-gray-500" /> Sort By
-          </AccordionTrigger>
+          <AccordionTrigger className="flex items-center gap-2">Sort By</AccordionTrigger>
           <AccordionContent>
-            <Select defaultValue="name-asc">
+            <Select value={sortValue} onValueChange={applySort}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="name-asc">Name: A-Z</SelectItem>
-                <SelectItem value="name-desc">Name: Z-A</SelectItem>
                 <SelectItem value="price-low">Price: Low → High</SelectItem>
                 <SelectItem value="price-high">Price: High → Low</SelectItem>
+                <SelectItem value="createdAt">Newest</SelectItem>
+                <SelectItem value="category">Category</SelectItem>
               </SelectContent>
             </Select>
           </AccordionContent>
         </AccordionItem>
 
-        {/* Price Range */}
+        {/* Price */}
         <AccordionItem value="price">
-          <AccordionTrigger className="flex items-center gap-2">
-            <DollarSign className="w-4 h-4 text-gray-500" /> Price Range
-          </AccordionTrigger>
+          <AccordionTrigger className="flex items-center gap-2">Price Range</AccordionTrigger>
           <AccordionContent>
             <div className="space-y-3 mt-2">
               <Slider
                 value={price}
-                onValueChange={setPrice}
+                onValueChange={(val: number[]) => setPrice(val as [number, number])}
                 min={0}
                 max={2000}
                 step={10}
@@ -90,7 +136,7 @@ export default function FilterSideBar() {
                 <span>Tk {price[0]}</span>
                 <span>Tk {price[1]}</span>
               </div>
-              <Button className="w-full mt-1 rounded-xl" size="sm">
+              <Button className="w-full mt-1 rounded-xl" size="sm" onClick={applyPrice}>
                 Apply Range
               </Button>
             </div>
@@ -99,38 +145,27 @@ export default function FilterSideBar() {
 
         {/* Categories */}
         <AccordionItem value="categories">
-          <AccordionTrigger className="flex items-center gap-2">
-            <Grid3X3 className="w-4 h-4 text-gray-500" /> Categories
-          </AccordionTrigger>
+          <AccordionTrigger className="flex items-center gap-2">Categories</AccordionTrigger>
           <AccordionContent>
             <div className="space-y-2">
-              {categories.map((cat, idx) => (
-                <div key={idx} className="flex items-center space-x-2">
-                  <Checkbox id={cat} />
-                  <Label htmlFor={cat} className="text-sm text-gray-700">
-                    {cat}
-                  </Label>
-                </div>
-              ))}
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-
-        {/* Brands */}
-        <AccordionItem value="brands">
-          <AccordionTrigger className="flex items-center gap-2">
-            <Factory className="w-4 h-4 text-gray-500" /> Brands
-          </AccordionTrigger>
-          <AccordionContent>
-            <div className="space-y-2">
-              {brands.map((brand, idx) => (
-                <div key={idx} className="flex items-center space-x-2">
-                  <Checkbox id={brand} />
-                  <Label htmlFor={brand} className="text-sm text-gray-700">
-                    {brand}
-                  </Label>
-                </div>
-              ))}
+              {loading ? (
+                <div>Loading...</div>
+              ) : categories?.data?.length ? (
+                categories.data.map((cat) => (
+                  <div key={cat.id} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={cat.id}
+                      checked={categoryIds.includes(cat.id)}
+                      onCheckedChange={(checked) => toggleCategory(cat.id, checked === true)}
+                    />
+                    <Label htmlFor={cat.id} className="text-sm text-gray-700">
+                      {cat.name}
+                    </Label>
+                  </div>
+                ))
+              ) : (
+                <p className="text-muted-foreground text-sm">No categories found</p>
+              )}
             </div>
           </AccordionContent>
         </AccordionItem>

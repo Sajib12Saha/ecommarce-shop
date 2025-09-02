@@ -66,7 +66,7 @@ const TrackingPage = () => {
   };
 
   return (
-    <div className="flex items-center justify-center p-8 py-10 w-full">
+    <div className="flex items-center  justify-center py-10 w-full px-4">
       <Card className="max-w-4xl w-full">
         <CardHeader className="w-full flex-col flex items-center">
           <CardTitle className="text-xl font-bold">Tracking your order</CardTitle>
@@ -75,7 +75,7 @@ const TrackingPage = () => {
           </CardDescription>
         </CardHeader>
 
-        <CardContent>
+        <CardContent className="flex flex-col ">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField

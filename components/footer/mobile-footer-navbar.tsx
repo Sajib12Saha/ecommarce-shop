@@ -12,8 +12,8 @@ export const navLinks = [
 
 export const MobileFooterNavbar = () => {
     return (
-        <div className="fixed bottom-0 left-0 right-0 z-50 bg-primary backdrop-blur-lg border-b shadow-sm lg:hidden">
-            <div className="px-6">
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-primary backdrop-blur-lg shadow-sm lg:hidden">
+            <div className="px-6 ">
                 <div className="h-14 relative flex justify-between items-center">
                 {navLinks.map(({href, Icon}, i)=> (
                     <Link href={href} key={i}>

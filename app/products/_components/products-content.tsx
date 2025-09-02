@@ -1,72 +1,107 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/ui/product-card";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { useProducts } from "@/hooks/use-products";
 import { dbProduct } from "@/types/type";
-import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface Props {
-    currentPage?:number 
+  sortBy?: "price" | "category" | "createdAt";
+  sortOrder?: "asc" | "desc";
+  minPrice?: number;
+  maxPrice?: number;
+  categoryIds?: string[];
 }
 
-export const ProductsContent = ({currentPage= 1}:Props) => {
+export const ProductsContent = ({
+  sortBy,
+  sortOrder,
+  minPrice,
+  maxPrice,
+  categoryIds,
+}: Props) => {
+  const [currentPage, setCurrentPage] = useState(1);
 
-      const { data: products, loading} = useProducts(currentPage);
-    return (
+  const searchParams = useSearchParams();
+  const productName = searchParams.get("productName")
+    ? decodeURIComponent(searchParams.get("productName")!)
+    : "";
+
+  const { data: products, loading } = useProducts(
+    currentPage,
+    sortBy,
+    sortOrder,
+    productName,
+    minPrice,
+    maxPrice,
+    categoryIds
+  );
+
+  return (
     <>
-       
-        {/* Loading State */}
-        {loading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 lg:gap-6">
-            {[...Array(8)].map((_, i) => (
-              <Skeleton key={i} className="h-60 w-full rounded-xl" />
+      {/* Loading State */}
+      {loading ? (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 w-full">
+          {[...Array(8)].map((_, i) => (
+      
+             <div
+              key={i}
+              className="p-3 border rounded-xl  space-y-3"
+            >
+              {/* Image */}
+              <Skeleton className="h-40 w-full rounded-lg" />
+              {/* Title */}
+              <Skeleton className="h-4 w-3/4" />
+              {/* Price */}
+              <Skeleton className="h-4 w-1/2" />
+              {/* Button */}
+              <Skeleton className="h-8 w-full rounded-lg" />
+            </div>
+   
+          
+          ))}
+        </div>
+      ) : products?.data && products?.data.length > 0 ? (
+        <>
+          {/* Products Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2">
+            {products.data.map((product: dbProduct, index: number) => (
+              <ProductCard product={product} key={index} />
             ))}
           </div>
-        ) : products?.data && products?.data.length > 0 ? (
-          <>
-            {/* Products Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6  gap-2">
-              {products.data.map((product: dbProduct, index: number) => (
-                <ProductCard product={product} key={index} />
-              ))}
-            </div>
 
-            {/* Pagination */}
-            <div className="flex justify-center items-center gap-4 pt-10">
-              <Link
-                href={`?page=${currentPage - 1}`}
-                className={`px-4 py-2 shadow rounded ${
-                  currentPage === 1
-                    ? "pointer-events-none opacity-50"
-                    : "hover:bg-primary transition"
-                }`}
-              >
-                Previous
-              </Link>
+          {/* Pagination */}
+          <div className="flex justify-center items-center gap-4 pt-10">
+            <Button
+              variant={"outline"}
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((prev) => prev - 1)}
+            >
+              Previous
+            </Button>
 
-              <span className="text-sm text-muted-foreground font-medium">
-                Page {currentPage} of {products.totalPages}
-              </span>
+            <span className="text-sm text-muted-foreground font-medium">
+              Page {currentPage} of {products.totalPages}
+            </span>
 
-              <Link
-                href={`?page=${currentPage + 1}`}
-                className={`px-4 py-2 shadow rounded ${
-                  currentPage >= products.totalPages
-                    ? "pointer-events-none opacity-50"
-                    : "hover:bg-primary transition"
-                }`}
-              >
-                Next
-              </Link>
-            </div>
-          </>
-        ) : (
-          <p className="text-center text-gray-600 py-20">
-            No products found.
-          </p>
-        )}
+            <Button
+              variant={"outline"}
+              disabled={currentPage >= products.totalPages}
+              onClick={() => setCurrentPage((prev) => prev + 1)}
+            >
+              Next
+            </Button>
+          </div>
+        </>
+      ) : (
+        <p className="text-center text-gray-600 py-20 h-screen">
+          No products found.
+        </p>
+      )}
     </>
-    )
-}
+  );
+};

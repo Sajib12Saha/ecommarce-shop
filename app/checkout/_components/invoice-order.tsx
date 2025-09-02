@@ -60,7 +60,7 @@ export const InvoiceOrder = ({ order }: Props) => {
   };
 
   return (
-    <div style={{ maxWidth: "900px", margin: "0 auto", padding: "40px", fontFamily: "Arial, sans-serif" }}>
+    <div style={{fontFamily: "Arial, sans-serif" }} className="mt-8">
       {/* INVOICE FULL PAGE */}
       <div
         ref={invoiceRef}
@@ -140,7 +140,8 @@ export const InvoiceOrder = ({ order }: Props) => {
 
         {/* ORDER ITEMS */}
         <h4 style={{ fontWeight: "bold", marginBottom: "12px" }}>Order Items</h4>
-        <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: "20px" }}>
+        <div style={{ overflowX: "auto", marginBottom: "20px" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse"}}>
           <thead>
             <tr style={{ background: "#f9f9f9" }}>
               <th style={{ border: "1px solid #ddd", padding: "8px" }}>Product</th>
@@ -174,6 +175,7 @@ export const InvoiceOrder = ({ order }: Props) => {
             })}
           </tbody>
         </table>
+        </div>
 
         {/* TOTAL */}
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
@@ -198,13 +200,13 @@ export const InvoiceOrder = ({ order }: Props) => {
       </div>
 
         {/* Control Buttons */}
-      <div style={{ display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
+      <div className="flex flex-col-reverse md:flex-row items-center gap-4 mt-4">
         <Button variant="outline" onClick={() => router.push("/")}>Continue Shopping</Button>
         <Button onClick={handleDownload}>
           {isLoading ? (
                 <div className="flex items-center gap-2">
                         <Zap className="w-4 h-4 animate-spin" />
-                       Downloading PDF...
+                       Downloading...
                       </div>
           ) : " Download PDF"}
          

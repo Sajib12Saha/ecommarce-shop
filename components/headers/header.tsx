@@ -1,9 +1,15 @@
+'use client';
+
 import { MessageSquare, Phone, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export function Header() {
+  const [productName, setProductName] = useState("");
+  const router = useRouter()
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 hidden lg:block bg-white shadow-sm">
       <div className="max-w-[120rem] mx-auto border-b">
@@ -28,8 +34,16 @@ export function Header() {
                   type="text"
                   placeholder="Search your product"
                   className="w-full pl-4 pr-12 py-2 "
+                  value={productName}
+                  onChange={(e)=> setProductName(e.target.value)}
+                    onKeyDown={(e) => {
+    if (e.key === "Enter") {
+      router.replace(`/products?productName=${encodeURIComponent(productName)}`);
+    }
+  }}
+
                 />
-                <button className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <button className="absolute right-3 top-1/2 transform -translate-y-1/2" type="button" onClick={()=> router.replace(`/products?productName=${encodeURIComponent(productName)}`)}>
                   <Search className="h-5 w-5 text-gray-400" />
                 </button>
               </div>

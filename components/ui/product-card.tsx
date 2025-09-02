@@ -8,6 +8,7 @@ import Link from "next/link";
 import { dbProduct } from "@/types/type";
 import { useCart } from "@/hooks/use-store";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface ProductCardProps {
   product: dbProduct;
@@ -129,7 +130,11 @@ export function ProductCard({ product }: ProductCardProps) {
           <Button
             className="text-xs px-4 py-1 h-7 rounded-md flex-1"
             disabled={inStocks <= 0 || isInCart}
-            onClick={() => addItem(product)}
+            onClick={() => {
+              addItem(product)
+              toast.success("Product added in cart")
+            
+            }}
           >
             {isInCart ? "ADDED" : "ADD TO CART"}
           </Button>
