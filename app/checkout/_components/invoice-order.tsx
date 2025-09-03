@@ -20,13 +20,24 @@ export const InvoiceOrder = ({ order }: Props) => {
   const router = useRouter()
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case "PENDING": return { background: "#FACC15", color: "#000" };
-      case "COMPLETED": return { background: "#16A34A", color: "#fff" };
-      case "SHIPPED": return { background: "#2563EB", color: "#fff" };
-      case "CANCELLED": return { background: "#DC2626", color: "#fff" };
-      default: return { background: "#6B7280", color: "#fff" };
-    }
+ switch (status) {
+  case "PENDING":
+    return { background: "#EAB308", color: "#fff" }; // 🟡 Yellow-500
+  case "PROCESSING":
+    return { background: "#9333EA", color: "#fff" }; // 🟣 Purple-500
+  case "SHIPPED":
+    return { background: "#2563EB", color: "#fff" }; // 🔵 Blue-600
+  case "NEARBY":
+    return { background: "#F97316", color: "#fff" }; // 🟠 Orange-500
+  case "COMPLETED":
+    return { background: "#16A34A", color: "#fff" }; // 🟢 Green-600
+  case "RETURNED":
+    return { background: "#4F46E5", color: "#fff" }; // 🟦 Indigo-500
+  case "CANCELLED":
+    return { background: "#DC2626", color: "#fff" }; // 🔴 Red-600
+  default:
+    return { background: "#6B7280", color: "#fff" }; // ⚪ Gray-500
+}
   };
 
   const handleDownload = async () => {
