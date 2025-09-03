@@ -47,7 +47,7 @@ export const InvoiceOrder = ({ order }: Props) => {
 
     const htmlContent = invoiceRef.current.outerHTML;
 
-    const res = await fetch("/api/invoice", {
+    const res = await fetch(`/api/invoice`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ html: htmlContent, fileName: `invoice-${order.id}.pdf` }),

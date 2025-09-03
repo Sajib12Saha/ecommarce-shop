@@ -71,6 +71,7 @@ export const siteMeta = {
   siteName:"Hillora",
   desc:"Hillora – A Bangladesh based Ecommerce Website (বাংলাদেশের খাগড়াছড়ি ভিত্তিক ই-কমার্স ওয়েবসাইট)।",
   keyWords:[
+    "Hillora",
     "Bangladesh Ecommerce",
     "Khagrachari Shop",
     "Online Shopping BD",
