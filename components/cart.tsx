@@ -21,7 +21,7 @@ export const Cart = () => {
 
   const remove = (id: string) => {
     removeItem(id);
-    toast.success("Item removed from cart");
+    toast.success("Product removed from cart");
   };
 
   const totalPrice = cartItems.reduce(

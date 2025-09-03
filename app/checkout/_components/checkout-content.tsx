@@ -44,7 +44,7 @@ interface Props {
 export const  CheckoutContent = ({ productId }: Props) => {
   const { cartItems } = useCart();
   const { data: products, loading } = useProducts();
-  const [selectedPayment, setSelectedPayment] = useState<string>("");
+  const [selectedPayment, setSelectedPayment] = useState<string>("cod");
   const [orderResponse, setOrderResponse] = useState<any>(null);
   const { submitOrder, loading: placingOrder, error } = usePostOrder();
 
