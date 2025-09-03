@@ -5,7 +5,11 @@ import FilterSideBar from "./filter-sidebar";
 import { ProductsContent } from "./products-content";
 import { HeadingTitle } from "@/components/heading-title";
 
-export const ProductState = () => {
+interface Props {
+  productName?:string
+}
+
+export const ProductState = ({productName}:Props) => {
   // Sorting state
   const [sortBy, setSortBy] = useState<"price" | "category" | "createdAt">("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
@@ -43,6 +47,7 @@ export const ProductState = () => {
             minPrice={minPrice}
             maxPrice={maxPrice}
             categoryIds={categoryIds}
+            productName={productName}
           />
         </div>
       </div>

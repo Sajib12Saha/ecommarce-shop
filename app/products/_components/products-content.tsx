@@ -15,6 +15,7 @@ interface Props {
   minPrice?: number;
   maxPrice?: number;
   categoryIds?: string[];
+  productName?:string;
 }
 
 export const ProductsContent = ({
@@ -23,15 +24,9 @@ export const ProductsContent = ({
   minPrice,
   maxPrice,
   categoryIds,
+  productName
 }: Props) => {
   const [currentPage, setCurrentPage] = useState(1);
- const [productName, setProductName] = useState("");
-  const searchParams = useSearchParams();
-      useEffect(() => {
-    const name = searchParams.get("productName");
-    setProductName(name ? decodeURIComponent(name) : "");
-  }, [searchParams]);
-
   const { data: products, loading } = useProducts(
     currentPage,
     sortBy,
