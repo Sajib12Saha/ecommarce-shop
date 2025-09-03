@@ -58,7 +58,7 @@ const ProductIdPage = async({ params }: Props) => {
 
 
   return (
-    <div className="p-6 px-8 max-w-7xl w-full mx-auto">
+    <div className="p-6 px-4 max-w-7xl w-full mx-auto">
 
      <Script
         type="application/ld+json"

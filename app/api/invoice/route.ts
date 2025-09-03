@@ -1,14 +1,20 @@
 // app/api/generate-pdf/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import puppeteer from "puppeteer";
+import puppeteer, { Browser } from "puppeteer-core";
+import chromiumModule from "@sparticuz/chromium";
+
+// TypeScript workaround: cast to any
+const chromium: any = chromiumModule;
 
 export async function POST(req: NextRequest) {
   try {
     const { html } = await req.json();
 
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    const browser: Browser = await puppeteer.launch({
+      args: ["--no-sandbox", "--disable-setuid-sandbox"], // manually set
+      executablePath: await chromium.executablePath(),
+      headless: true, // chromium.headless can be ignored
+      defaultViewport: { width: 1280, height: 800 },
     });
 
     const page = await browser.newPage();
@@ -21,7 +27,6 @@ export async function POST(req: NextRequest) {
 
     await browser.close();
 
-    // ✅ Convert Buffer → Uint8Array so TypeScript is happy
     const pdfBytes = new Uint8Array(pdfBuffer);
 
     return new Response(pdfBytes, {
