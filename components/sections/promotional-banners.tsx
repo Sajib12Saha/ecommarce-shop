@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { siteMeta } from "@/data";
 
 export function PromotionalBanners() {
   return (
@@ -20,7 +21,7 @@ export function PromotionalBanners() {
           >
             <Image
               src="/banners/masala.jpg"
-              alt="Ginger"
+              alt={`${siteMeta.siteName}`}
               fill
               className="object-cover object-center"
               loading="lazy"
@@ -58,7 +59,7 @@ export function PromotionalBanners() {
             >
               <Image
                 src="/banners/all-masala.jpg"
-                alt="Woman Cooking"
+                alt={`${siteMeta.siteName}`}
                 fill
                 className="object-cover object-center"
               />
@@ -83,7 +84,7 @@ export function PromotionalBanners() {
               >
                 <Image
                   src="/banners/tomato.jpg"
-                  alt="Organic"
+                  alt={`${siteMeta.siteName}`}
                   fill
                   className="object-cover object-center"
                   loading="lazy"
@@ -109,7 +110,7 @@ export function PromotionalBanners() {
               >
                 <Image
                   src="/banners/makeup.jpg"
-                  alt="Makeup"
+                  alt={`${siteMeta.siteName}`}
                   fill
                   className="object-cover object-center"
                   loading="lazy"

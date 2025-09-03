@@ -1,5 +1,3 @@
-import Image from "next/image"
-import { Card, CardContent } from "@/components/ui/card"
 import { dbProduct } from "@/types/type"
 import { ProductCard } from "@/components/ui/product-card"
 

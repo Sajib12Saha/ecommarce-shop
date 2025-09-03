@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { siteMeta } from "@/data";
 
 export function Footer() {
   const year = new Date().getFullYear();
@@ -43,7 +44,7 @@ export function Footer() {
           <div>
          <Image
                    src={"/logo.jpg"}
-                   alt="Hillora"
+                   alt={`${siteMeta.siteName}`}
                    width={100}
                    height={60}
                    className="object-contain overflow-hidden"
@@ -109,7 +110,7 @@ export function Footer() {
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             {/* Left - copyright */}
             <div className="text-sm text-gray-600 text-center lg:text-left">
-              ©{year} - ePahar. All rights reserved.
+              ©{year} - ${siteMeta.siteName}. All rights reserved.
             </div>
 
             {/* Center - Payment Methods */}
@@ -118,7 +119,7 @@ export function Footer() {
                 <Image
                   key={index}
                   src={p}
-                  alt="Payment method"
+                  alt={`${siteMeta.siteName}`}
                   width={100}
                   height={40}
                   className="object-contain size-16 lg:size-24"

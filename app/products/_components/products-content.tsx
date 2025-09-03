@@ -6,8 +6,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 import { useProducts } from "@/hooks/use-products";
 import { dbProduct } from "@/types/type";
-import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+
+import {useState } from "react";
 
 interface Props {
   sortBy?: "price" | "category" | "createdAt";

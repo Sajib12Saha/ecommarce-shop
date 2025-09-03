@@ -44,6 +44,7 @@ export function AuthForm() {
     name:"",
     email:"",
     password:"",
+    confirmPassword:"",
     },
   });
 
@@ -237,6 +238,7 @@ const providerSubmit = async(provider:"google" | "facebook")=> {
                       allowShowHidePassword
                       important
                     />
+
                   )}
                 />
 
@@ -320,6 +322,22 @@ const providerSubmit = async(provider:"google" | "facebook")=> {
                       fieldType="input"
                       inputType="password"
                       label="Password"
+                      placeHolder="*****"
+                      allowShowHidePassword
+                      important
+                    />
+                  )}
+                />
+
+                                   <FormField
+                  control={registerForm.control}
+                  name="confirmPassword"
+                  render={({ field }) => (
+                    <CustomForm
+                      field={field}
+                      fieldType="input"
+                      inputType="password"
+                      label="Confirm Password"
                       placeHolder="*****"
                       allowShowHidePassword
                       important

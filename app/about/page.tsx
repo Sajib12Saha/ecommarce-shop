@@ -1,17 +1,72 @@
-const AboutPage = () => {
-    return (
-        <div className="p-4 flex flex-col items-center  gap-y-6">
-        <h2 className="text-3xl font-bold">About Us</h2>
+import { siteMeta, siteMetaAbout } from "@/data";
+import type { Metadata } from "next";
 
-        <p className="lg:p-10 p-4 leading-8">
-            Welcome to ePahar, a unique online shopping platform that offers a vast array of high-quality products to meet your needs. Whether you're seeking nutritious organic food, fashionable clothing, or modern daily essentials, ePahar has got you covered. At ePahar, we take great pride in our dedicated team of conscious farmers and skilled professionals who work tirelessly to bring you the best products. Their unwavering commitment ensures the well-being of our valued customers and enables us to tackle new challenges with efficiency and effectiveness. Our extensive selection of organic food is a testament to our dedication to promoting a healthy lifestyle. We understand the importance of providing nourishing options that support your well-being. From fresh produce to pantry staples, you can trust ePahar to deliver the finest quality products to your doorstep. In addition to our focus on food, we also offer a wide range of fashionable clothing that combines style with comfort. Our curated collection is designed to cater to diverse tastes and preferences, ensuring you can find the perfect attire for any occasion. Stay ahead of the fashion curve with ePahar's trendy clothing options. Furthermore, ePahar is committed to meeting the evolving demands of our customers. Our team constantly strives to enhance our platform, ensuring a seamless and user-friendly shopping experience. We embrace innovation and leverage cutting-edge technology to provide you with a hassle-free online shopping journey. At ePahar, we believe in the power of convenience. With just a few clicks, you can explore our extensive product catalogue, place orders, and have them delivered to your doorstep. Say goodbye to the hassle of traditional shopping and embrace the ease and efficiency of ePahar.
+export const metadata: Metadata = {
+  title: `About Us | ${siteMeta.siteName}`,
+  description:
+    "",
+  openGraph: {
+    title: `About Us | ${siteMeta.siteName} - Online Tribal E-commarce of Bangladesh`,
+    description:siteMetaAbout.desc,
+    url: `${process.env.NEXT_PUBLIC_BASE_URL}/about`,
+    siteName: siteMeta.siteName,
+    type: "website",
+    images: [
+      {
+        url: siteMetaAbout.image, 
+        width: 1200,
+        height: 630,
+        alt: `${siteMeta.siteName}`,
+      },
+    ],
+    locale: "bn_BD",
+  },
+  alternates: {
+    canonical: `${process.env.NEXT_PUBLIC_BASE_URL}/about`,
+    languages: {
+      en: "https://yourdomain.com/en/about",
+      bn: "https://yourdomain.com/bn/about",
+    },
+  },
+};
+
+const AboutPage = () => {
+  return (
+    <main className="p-4 flex flex-col items-center gap-y-6 max-w-7xl mx-auto">
+      <h1 className="text-4xl lg:text-5xl font-bold text-center">About Us</h1>
+
+      <section className="lg:px-10 p-4 text-gray-700 leading-relaxed text-justify space-y-6">
+        <p>
+          Welcome to <strong>Hillora</strong>, a unique online shopping platform
+          that offers a vast array of high-quality products to meet your needs.
+          Whether you're seeking nutritious organic food, fashionable clothing,
+          or modern daily essentials, ePahar has got you covered. Our dedicated
+          team of conscious farmers and skilled professionals work tirelessly to
+          bring you the best products, ensuring quality and customer satisfaction.
         </p>
 
-        <h6 className="font-semibold text-base lg:text-lg lg:p-14 p-4 leading-6">We invite you to experience the convenience, quality, and variety that ePahar offers. Join us on this exciting journey as we revolutionize the way you shop. Discover the difference with ePahar, your powerful online shopping platform.</h6>
+        <p>
+          Our extensive selection of organic food promotes a healthy lifestyle,
+          from fresh produce to pantry staples. We also offer fashionable
+          clothing that combines style with comfort, catering to diverse tastes
+          and preferences. Stay ahead of trends with ePahar's curated collections.
+        </p>
 
-        
-        </div>
-    )
-}
+        <p>
+          Hillora is committed to providing a seamless, user-friendly online
+          shopping experience. Leveraging cutting-edge technology, we ensure
+          convenience and efficiency in every order, delivering directly to your
+          doorstep.
+        </p>
+
+        <p className="font-semibold text-lg">
+          Join us on this exciting journey and discover the difference with
+          <strong> Hillora</strong>, your powerful online shopping platform in
+          Bangladesh.
+        </p>
+      </section>
+    </main>
+  );
+};
 
 export default AboutPage;

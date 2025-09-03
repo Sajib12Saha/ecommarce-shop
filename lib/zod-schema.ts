@@ -2,11 +2,19 @@ import z, { email } from "zod";
 
 
 
-export const registerSchema = z.object({
-  name: z.string().min(1, { message: "নামটি অবশ্যই দিতে হবে।" }),
-  email: z.string().email({ message: "সঠিক ইমেইল ঠিকানা দিন।" }),
-  password: z.string().min(4, { message: "পাসওয়ার্ড কমপক্ষে ৪ অক্ষরের হতে হবে।" }),
-});
+export const registerSchema = z
+  .object({
+    name: z.string().min(1, { message: "নামটি অবশ্যই দিতে হবে।" }),
+    email: z.string().email({ message: "সঠিক ইমেইল ঠিকানা দিন।" }),
+    password: z
+      .string()
+      .min(4, { message: "পাসওয়ার্ড কমপক্ষে ৪ অক্ষরের হতে হবে।" }),
+    confirmPassword: z.string().min(1, { message: "পাসওয়ার্ড নিশ্চিত করুন।" }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    path: ["confirmPassword"], // 🔥 error will show under confirmPassword field
+    message: "পাসওয়ার্ড এবং কনফার্ম পাসওয়ার্ড মিলে না।",
+  });
 
 export const logInSchema = z.object({
   email: z.string().email({ message: "সঠিক ইমেইল ঠিকানা দিন।" }),

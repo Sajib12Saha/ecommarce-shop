@@ -193,7 +193,7 @@ export const InvoiceOrder = ({ order }: Props) => {
           <div style={{ width: "30%" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <span>Discount:</span>
-              <span>BDT -{order.totalDiscount || 0}</span>
+              <span style={{color:"#16a34a"}}>BDT -{order.totalDiscount || 0}</span>
             </div>
             <hr />
             <div style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold", fontSize: "14px" }}>

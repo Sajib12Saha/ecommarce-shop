@@ -9,6 +9,7 @@ import { dbProduct } from "@/types/type";
 import { useCart } from "@/hooks/use-store";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { siteMeta } from "@/data";
 
 interface ProductCardProps {
   product: dbProduct;
@@ -74,7 +75,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <Link href={`/products/${id}`}>
           <div className="w-full h-40 mb-4 relative rounded-xl overflow-hidden bg-gray-50">
             <Image
-              src={productImage || "/placeholder.svg"}
+              src={productImage || `${siteMeta.siteName}`}
               alt={name}
               fill
               className="object-contain"
