@@ -85,7 +85,7 @@ const TrackingPage = () => {
                   <CustomForm
                     field={field}
                     fieldType="input"
-                    label="Order Id"
+                    label="Order No"
                     placeHolder="Enter your order no."
                     important
                   />
