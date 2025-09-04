@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useUser } from "@/contexts/UserContext";
 import { Loader2 } from "lucide-react";
 
-export default function AuthCallbackPage() {
+function AuthCallbackContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { refreshUser } = useUser();
@@ -14,32 +14,31 @@ export default function AuthCallbackPage() {
     const token = searchParams.get("token");
 
     if (token) {
-      // ✅ Store token for persistence
       localStorage.setItem("auth_token", token);
-
-      // ✅ Remove token from URL (clean URL)
       window.history.replaceState({}, document.title, "/auth/callback");
 
-      // ✅ Refresh user with token immediately
       refreshUser(token)
-        .then(() => {
-          router.replace("/"); // Navigate to homepage
-        })
+        .then(() => router.replace("/"))
         .catch(() => {
-          // Token invalid or refresh failed
           localStorage.removeItem("auth_token");
           router.replace("/sign-up");
         });
     } else {
-      // No token in URL → redirect
       router.replace("/sign-up");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Run only once
+  }, [searchParams, refreshUser, router]);
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center">
-      <Loader2 className="size-6 animate-spin" />
+      <Loader2 className="h-6 w-6 animate-spin" />
     </div>
+  );
+}
+
+export default function AuthCallbackPage() {
+  return (
+    <Suspense fallback={<div className="h-screen w-full justify-center items-center flex"><Loader2 className="animate-spin size-6"/></div>}>
+      <AuthCallbackContent />
+    </Suspense>
   );
 }
