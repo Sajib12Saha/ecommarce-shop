@@ -16,7 +16,7 @@ import Autoplay from "embla-carousel-autoplay";
 import { useRef } from "react";
 
 export function NewProducts() {
-  const { data: products, loading } = useProducts(1);
+  const { data: products, isLoading } = useProducts({page:1});
 
   // ✅ Autoplay plugin
   const plugin = useRef(
@@ -27,7 +27,7 @@ export function NewProducts() {
     <div className="py-16 bg-gray-50 mt-8 lg:mt-10 relative">
       <HeadingTitle title="New Products" />
 
-      {loading ? (
+      {isLoading ? (
         <div className="grid grid-flow-col auto-cols-[12rem] gap-4 px-4 sm:px-8 lg:px-14 overflow-x-auto mt-8">
           {[...Array(6)].map((_, i) => (
             <Skeleton key={i} className="h-64 w-full rounded-xl" />

@@ -1,27 +1,31 @@
+import { useQuery } from "@tanstack/react-query";
 import { getProducts, ProductsResponse } from "@/actions/product";
-import { useEffect, useState } from "react";
 
-/* ✅ Custom hook with loading state and full filters */
-export function useProducts(
-  page?: number,
-  sortBy?: "price" | "category" | "createdAt",
-  sortOrder?: "asc" | "desc",
-  productName?: string,
-  minPrice?: number,
-  maxPrice?: number,
-  categoryIds?: string[]
-) {
-  const [data, setData] = useState<ProductsResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    setLoading(true);
-    getProducts(page, sortBy, sortOrder, productName, minPrice, maxPrice, categoryIds)
-      .then(setData)
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, [page, sortBy, sortOrder, productName, minPrice, maxPrice, categoryIds]);
-
-  return { data, loading, error };
+interface UseProductsOptions {
+  page?: number;
+  sortBy?: "price" | "category" | "createdAt";
+  sortOrder?: "asc" | "desc";
+  productName?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  categoryIds?: string[];
 }
+
+export const useProducts = (options: UseProductsOptions = {}) => {
+  return useQuery<ProductsResponse, Error>({
+    queryKey: ["products", options], // cache key depends on filters
+    queryFn: () =>
+      getProducts(
+        options.page,
+        options.sortBy,
+        options.sortOrder,
+        options.productName,
+        options.minPrice,
+        options.maxPrice,
+        options.categoryIds
+      ),
+    staleTime: 120 * 1000,     // 2 min: don’t refetch
+    gcTime: 5 * 60 * 1000,     // v5: replaces cacheTime
+    placeholderData: (prev) => prev, // replaces keepPreviousData
+  });
+};

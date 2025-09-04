@@ -43,7 +43,7 @@ interface Props {
 
 export const  CheckoutContent = ({ productId }: Props) => {
   const { cartItems } = useCart();
-  const { data: products, loading } = useProducts();
+  const { data: products, isLoading } = useProducts();
   const [selectedPayment, setSelectedPayment] = useState<string>("cod");
   const [orderResponse, setOrderResponse] = useState<any>(null);
   const { submitOrder, loading: placingOrder, error } = usePostOrder();
@@ -110,7 +110,7 @@ export const  CheckoutContent = ({ productId }: Props) => {
           <h3 className="text-xl font-semibold">Cart & Shipping & Payment</h3>
         </CardHeader>
         <CardContent className="p-6 space-y-6">
-          {loading ? (
+          {isLoading ? (
              <div className="space-y-3">
               {[...Array(2)].map((_, i) => (
                 <div key={i} className="flex items-center gap-3">

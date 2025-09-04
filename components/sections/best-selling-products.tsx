@@ -8,7 +8,7 @@ import Link from "next/link";
 import { HeadingTitle } from "../heading-title";
 
 export function BestSelling() {
-  const { data: products, loading, error } = useProducts(1);
+  const { data: products, isLoading, error } = useProducts({page:1});
 
   return (
     <div className="py-16">
@@ -18,7 +18,7 @@ export function BestSelling() {
     
 
         {/* Loading State */}
-        {loading ? (
+        {isLoading ? (
           <div
             className="
              grid 

@@ -9,6 +9,8 @@ import { UserProvider } from "@/contexts/UserContext";
 import { Cart } from "@/components/cart";
 import { MobileFooterNavbar } from "@/components/footer/mobile-footer-navbar";
 import { siteMeta } from "@/data";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "@/provider/queryClient-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -59,6 +61,7 @@ export const metadata: Metadata = {
   },
 };
 
+
 export default function RootLayout({
   children,
 }: {
@@ -76,7 +79,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-
+           <QueryClientProvider client={queryClient}>
         <UserProvider>
           <main className="max-w-[120rem] mx-auto">
             <Navbar />
@@ -90,6 +93,7 @@ export default function RootLayout({
           <Toaster />
           <MobileFooterNavbar />
         </UserProvider>
+        </QueryClientProvider>
       </body>
     </html>
   );

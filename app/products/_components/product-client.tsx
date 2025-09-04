@@ -22,7 +22,7 @@ interface Props {
 
 export const ProductClient = ({productId}:Props) => {
   const [selectedImage, setSelectedImage] = useState(0);
-  const { data: products, loading } = useProducts();
+  const { data: products, isLoading } = useProducts();
   const { cartItems, addItem } = useCart();
   const { data: categories, loading: categoryLoading } = useCategories();
   const router = useRouter();
@@ -32,7 +32,7 @@ export const ProductClient = ({productId}:Props) => {
   );
 
 
-    if (loading || categoryLoading) {
+    if (isLoading || categoryLoading) {
     return (
        <div className="p-6 px-8 max-w-7xl w-full mx-auto space-y-8">
       {/* Product ID Skeleton */}
