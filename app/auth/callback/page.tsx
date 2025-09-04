@@ -3,7 +3,7 @@ import { AuthCallbackClient } from "../_components/auth-callback-client";
 
 
 interface Props {
-  searchParams: { token?: string };
+  searchParams: Promise<{ token?: string }>;
 }
 
 
