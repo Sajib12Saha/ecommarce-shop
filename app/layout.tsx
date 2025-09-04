@@ -76,6 +76,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+
         <UserProvider>
           <main className="max-w-[120rem] mx-auto">
             <Navbar />

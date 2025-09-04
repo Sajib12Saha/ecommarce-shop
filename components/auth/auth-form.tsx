@@ -31,9 +31,10 @@ export function AuthForm() {
   const [formStep, setFormStep] = useState<"register" | "verifyOtp">("register");
   const [userEmail, setUserEmail] = useState("");
   const [loginError, setLoginError] = useState("")
+  const [registerError, setRegisterError] = useState("")
   const [loadProvider, setLoadProvider] = useState(false)
   const router = useRouter()
-  const {refreshUser} = useUser()
+  const {setUser, refreshUser} = useUser()
 
 
 
@@ -56,30 +57,28 @@ export function AuthForm() {
     },
   });
 
-const logInSubmit = async (values: z.infer<typeof logInSchema>) => {
-  try {
-    setIsLoading(true);
-    setLoginError(""); // clear previous error
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_ADMIN_URL}/api/user/login`,
-      values,
-      { withCredentials: true }
-    );
-    await refreshUser();         
-    router.push("/profile");     
+  const logInSubmit = async (values: z.infer<typeof logInSchema>) => {
+    try {
+      setIsLoading(true);
+      setLoginError("");
 
-    toast.success("Logged in successfully!");
-  } catch (error: any) {
-    if (axios.isAxiosError(error)) {
-      const message = error.response?.data?.error || "Login failed";
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_ADMIN_URL}/api/user/login`, values);
+
+      if (res.status === 200 && res.data.token) {
+        localStorage.setItem("auth_token", res.data.token);
+        await refreshUser(res.data.token);
+        router.push("/");
+        toast.success("Logged in successfully!");
+      } else {
+        setLoginError(res.data.error || "Login failed");
+      }
+    } catch (error: any) {
+      const message = axios.isAxiosError(error) ? error.response?.data?.error || "Login failed" : "Unexpected error occurred.";
       setLoginError(message);
-    } else {
-      toast.error("Unexpected error occurred.");
+    } finally {
+      setIsLoading(false);
     }
-  } finally {
-    setIsLoading(false);
   }
-};
 
 
 
@@ -105,7 +104,8 @@ const registerSubmit = async (values: z.infer<typeof registerSchema>) => {
     }
   } catch (error: any) {
     if (axios.isAxiosError(error)) {
-      toast.error(error.response?.data?.error || "Registration failed");
+      const message = error.response?.data?.error || "Registration failed";
+      setRegisterError(message)
     } else {
       toast.error("An unexpected error occurred.");
     }
@@ -115,57 +115,49 @@ const registerSubmit = async (values: z.infer<typeof registerSchema>) => {
 };
 
 
-const handleOtpSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  try {
-    setIsLoading(true);
-    const res = await axios.post(
-      `${process.env.NEXT_PUBLIC_ADMIN_URL}/api/user/verify-otp`,
-      {
-        email: userEmail,
-        otp,
-      },
-      { withCredentials: true }
-    );
+  const handleOtpSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (otp.length < 6) return;
 
-    if(res.status === 200){
-    router.refresh()
-    router.push("/profile")
-    toast.success("Email verified & logged in!");
+    try {
+      setIsLoading(true);
+
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_ADMIN_URL}/api/user/verify-otp`,
+        { email: userEmail, otp },
+        { withCredentials: true }
+      );
+
+      if (res.status === 200 && res.data.token) {
+        localStorage.setItem("auth_token", res.data.token);
+         await refreshUser(res.data.token);
+        router.push("/");
+        toast.success("Email verified & logged in!");
+      }
+    } catch (error: any) {
+      const message = axios.isAxiosError(error) ? error.response?.data?.error || "OTP verification failed" : "Unexpected error occurred.";
+      toast.error(message);
+    } finally {
+      setIsLoading(false);
     }
+  };
 
 
-  } catch (err: any) {
-    if (axios.isAxiosError(err)) {
-      const errorMessage = err.response?.data?.error || "OTP verification failed";
-      toast.error(errorMessage);
+
+const providerSubmit = (provider: "google" | "facebook") => {
+  try {
+    setLoadProvider(true);
+
+    if (provider === "google") {
+      window.location.href = `${process.env.NEXT_PUBLIC_ADMIN_URL}/api/auth/google`;
     } else {
-      toast.error("An unexpected error occurred.");
+      window.location.href = `${process.env.NEXT_PUBLIC_ADMIN_URL}/api/auth/facebook`;
     }
-  } finally {
-    setIsLoading(false);
-  }
-};
-
-const providerSubmit = async(provider:"google" | "facebook")=> {
-  try {
-    setLoadProvider(true)
-
-    if(provider === "google"){
-       await fetch(`${process.env.NEXT_PUBLIC_ADMIN_URL}/auth/google`)
-      
-    }else{
-        await fetch(`${process.env.NEXT_PUBLIC_ADMIN_URL}/auth/facebook`)
-    }
-    
   } catch (error: any) {
-    toast.error(error.message || "Something wrong in server")
-    
-  }finally{
-    setLoadProvider(false)
+    toast.error(error.message || "Something went wrong");
+    setLoadProvider(false);
   }
-}
-
+};
 
 
 
@@ -345,6 +337,7 @@ const providerSubmit = async(provider:"google" | "facebook")=> {
                   )}
                 />
                 
+                  {registerError && <p className="text-destructive text-sm font-semibold flex items-center gap-x-2"> <TriangleAlert className="size-4"/> {registerError}</p>}
             
 
                   <Button

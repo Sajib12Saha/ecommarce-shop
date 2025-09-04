@@ -1,6 +1,6 @@
 "use client";
 
-import { Zap } from "lucide-react";
+import { CheckCircle2, TriangleAlert, Zap } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -40,6 +40,8 @@ export const ForgotPasswordForm = ({token}:Props) => {
      const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [success, setSuccess] = useState("");
+   const [error, setError] = useState("");
 
   const emailForm = useForm<EmailInput>({
     resolver: zodResolver(emailSchema),
@@ -60,25 +62,19 @@ const handleSendResetLink = async (values: EmailInput) => {
       method: "POST",
       body: JSON.stringify(values),
     });
+  
+  const data = await res.json()
 
-    let data;
-    try {
-      data = await res.json();
-    } catch {
-      data = { message: "No response from server" };
+    if(res.status === 200){
+      setSuccess(data.message)
+      setError("")
+    } else {
+      setError(data.message)
+      setSuccess("")
     }
-
-    if (!res.ok) {
-      // HTTP error from backend
-      toast.error(data.message || "Failed to send reset link.");
-      return;
-    }
-
-    // Success
-    toast.success(data.message);
     emailForm.reset();
   } catch (err) {
-    console.error("Fetch error:", err); // <-- This will log actual error
+    console.error("Fetch error:", err);
     toast.error("Network or CORS error. Failed to send reset link.");
   } finally {
     setIsLoading(false);
@@ -172,6 +168,8 @@ const handleSendResetLink = async (values: EmailInput) => {
                     />
                   )}
                 />
+                {success && <p className="text-green-600 flex gap-x-2 items-center text-sm font-semibold"><CheckCircle2 className="size-4"/> {success}</p>}
+                {error && <p className="text-destructive flex gap-x-2 items-center text-sm font-semibold"><TriangleAlert className="size-4"/> {error}</p>}
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? (
                     <div className="flex items-center gap-2">

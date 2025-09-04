@@ -8,6 +8,8 @@ import { Badge } from "../ui/badge"
 import { BiCategory } from "react-icons/bi"
 import { useCart, useOpenStore } from "@/hooks/use-store"
 import { useRouter } from "next/navigation"
+import { useUser } from "@/contexts/UserContext"
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 
 
 
@@ -15,6 +17,7 @@ export function Navigation() {
   const router = useRouter()
   const { setOpen } = useOpenStore()
   const { cartItems} = useCart();
+  const {user}= useUser()
 
   return (
     <div className="fixed top-[81px] left-0 right-0 z-50 backdrop-blur-lg border-b shadow-sm hidden lg:block">
@@ -59,13 +62,29 @@ export function Navigation() {
     <span className="block text-xs">Track Order</span>
   </button>
 
-            <Link
+    {user ? (
+      <Link href={'/profile'} className="flex flex-col items-center hover:scale-105 transition-all">
+<Avatar>
+  {user?.image && (
+    <AvatarImage src={user.image} alt={user?.name || "User"} className="object-cover"/>
+  )}
+  <AvatarFallback className="bg-purple-600 text-white">
+    {user?.name?.charAt(0).toUpperCase() || "U"}
+  </AvatarFallback>
+</Avatar>
+
+<p className="text-xs font-semibold text-muted-foreground">{user.email}</p>
+    </Link>)
+       : (
+      <Link
               href={"/sign-up"}
-              className="text-center flex flex-col gap-y-1 items-center"
+              className="text-center flex flex-col gap-y-1 items-center hover:scale-105 transition-all"
             >
               <User2 />
               <span className="text-xs block">Sign Up</span>
             </Link>
+    )}
+      
           </div>
         </div>
       </div>

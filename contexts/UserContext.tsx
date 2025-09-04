@@ -1,62 +1,94 @@
 "use client";
 
-import {
+import React, {
   createContext,
   useContext,
-  useEffect,
   useState,
+  useEffect,
   ReactNode,
 } from "react";
+import { jwtDecode } from "jwt-decode"; 
+import { getUser } from "@/actions/user";
 
-interface User {
+export interface User {
   id: string;
   email: string;
+  name: string | null;
+  image: string | null;
   role: string;
+  mobileNumber: string | null;
+  address: string | null;
 }
 
 interface UserContextType {
   user: User | null;
+  loaded: boolean;
+  refreshUser: (tokenFromCallback?: string) => Promise<void>;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
-  loaded: boolean; // true after we attempted at least one check
-  refreshUser: () => Promise<void>;
+  logout: () => void;
 }
 
-const UserContext = createContext<UserContextType | null>(null);
+const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loaded, setLoaded] = useState(false);
 
-  const refreshUser = async () => {
+  const refreshUser = async (tokenFromCallback?: string) => {
     try {
-  
-      const res = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_URL}/api/user/cookies-auth`, {
-        method: "GET",
-        credentials: "include", 
-      });
-
-      if (!res.ok) {
-        console.warn("Auth check failed:", res.status);
+      const token = tokenFromCallback || localStorage.getItem("auth_token");
+      if (!token) {
         setUser(null);
+        setLoaded(true);
         return;
       }
 
-      const data = await res.json();
-      setUser(data.user || null);
+      // ✅ Decode JWT safely
+      let decoded: Partial<User> | null = null;
+      try {
+        decoded = jwtDecode<Partial<User>>(token);
+        console.log("Decoded JWT:", decoded);
+      } catch (err) {
+        console.warn("Invalid JWT:", err);
+        localStorage.removeItem("auth_token");
+        setUser(null);
+        setLoaded(true);
+        return;
+      }
+
+      // ✅ Fetch user from backend
+      const response = await getUser();
+
+      if (response.success && response.user) {
+        // Merge backend user with decoded fallback
+        setUser({
+          ...decoded,        // image, name, etc. from token
+          ...response.user,  // backend fields (mobileNumber, address, etc.)
+        });
+      } else {
+        // fallback → at least keep decoded JWT values
+        setUser(decoded as User);
+      }
     } catch (err) {
-      console.error("Refresh user error:", err);
+      console.error("refreshUser error:", err);
+      localStorage.removeItem("auth_token");
       setUser(null);
     } finally {
       setLoaded(true);
     }
   };
 
+  const logout = () => {
+    localStorage.removeItem("auth_token");
+    setUser(null);
+  };
+
   useEffect(() => {
-    refreshUser();
+    refreshUser(); // run once on mount
   }, []);
 
   return (
-    <UserContext.Provider value={{ user, setUser, loaded, refreshUser }}>
+    <UserContext.Provider value={{ user, loaded, refreshUser, setUser, logout }}>
       {children}
     </UserContext.Provider>
   );
@@ -64,8 +96,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
 export const useUser = (): UserContextType => {
   const context = useContext(UserContext);
-  if (!context) {
-    throw new Error("useUser must be used within a UserProvider");
-  }
+  if (!context) throw new Error("useUser must be used within UserProvider");
   return context;
 };

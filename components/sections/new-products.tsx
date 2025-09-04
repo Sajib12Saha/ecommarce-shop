@@ -36,7 +36,7 @@ export function NewProducts() {
       ) : products?.data && products.data.length > 0 ? (
         <div className="relative mt-8">
           <Carousel className="w-full" plugins={[plugin.current]}>
-            <CarouselContent className="grid grid-flow-col auto-cols-[calc(50%-0.5rem)] sm:auto-cols-[calc(33.333%-0.75rem)] lg:auto-cols-[calc(16.666%-1rem)] gap-4 px-4 sm:px-8 lg:px-14">
+            <CarouselContent className="grid grid-flow-col auto-cols-[calc(50%-0.5rem)] sm:auto-cols-[calc(33.333%-0.75rem)] lg:auto-cols-[calc(16.666%-1rem)] gap-4 px-4 sm:px-8 lg:px-14 py-2">
               {products.data.map((product) => (
                 <CarouselItem key={product.id} className="w-full">
                   <ProductCard product={product} />

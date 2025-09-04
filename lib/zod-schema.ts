@@ -38,3 +38,20 @@ export const orderItemFormSchema = z.object({
   orderId: z.string().min(1, "অর্ডার আইডি আবশ্যক"),
   productId: z.string().min(1, "প্রোডাক্ট আইডি আবশ্যক"),
 });
+
+export const profileSchema = z.object({
+  name: z
+    .string()
+    .min(1, { message: "নাম আবশ্যক" })
+    .max(20, { message: "নাম ২০ অক্ষরের বেশি হতে পারবে না" }),
+
+  mobileNumber: z
+    .string()
+   .min(10, "মোবাইল নাম্বার কমপক্ষে 10 ডিজিট হতে হবে")
+    .max(15, "মোবাইল নাম্বার সর্বোচ্চ 15 ডিজিট হতে পারবে")
+    .regex(/^\+?[0-9]\d{1,14}$/, "অবৈধ মোবাইল নাম্বার"),
+
+  address: z
+    .string()
+    .min(5, { message: "ঠিকানা আবশ্যক" })
+});
