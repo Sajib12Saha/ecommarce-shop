@@ -1,9 +1,4 @@
 
-
-import { useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useUser } from "@/contexts/UserContext";
-import { Loader2 } from "lucide-react";
 import { AuthCallbackClient } from "../_components/auth-callback-client";
 
 
