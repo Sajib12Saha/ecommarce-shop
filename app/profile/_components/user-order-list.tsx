@@ -33,7 +33,7 @@ export const UserOrderList = ({ tabValue, userId }: Props) => {
 
   return (
     <TabsContent value={tabValue} className="space-y-4">
-      <Card className="border shadow-sm">
+      <Card className="border shadow-sm p-0 lg:p-1">
         <CardHeader>
           <CardTitle className="text-lg font-semibold">My Orders</CardTitle>
         </CardHeader>
