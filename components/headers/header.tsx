@@ -171,18 +171,20 @@ useEffect(() => {
               <div className="flex items-center gap-2">
                 <MessageSquare className="w-5 h-5 text-green-600" />
                 <a
-                  href="https://wa.me/8801321208940?text=হ্যালো, আমি একটি পণ্য অর্ডার করতে চাই।"
+                  href="https://wa.me/8801516194716?text=হ্যালো, আমি একটি পণ্য অর্ডার করতে চাই।"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-green-600 font-semibold hover:underline "
                 >
-                  WhatsApp: +8801321208940
+                  WhatsApp: +8801516194716
                 </a>
               </div>
 
               <div className="flex items-center gap-2">
                 <Phone className="w-5 h-5 text-purple-600" />
-                <span className="text-purple-600 font-semibold">হট লাইন: 09642-922922</span>
+      <a className="text-purple-600 font-semibold" href="tel:01519558558">
+      হট লাইন: 01519558558
+    </a>
               </div>
             </div>
 
