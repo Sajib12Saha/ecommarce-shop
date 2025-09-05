@@ -74,7 +74,7 @@ export const  CheckoutContent = ({ productId }: Props) => {
   // React Hook Form
   const form = useForm<ShippingForm>({
     resolver: zodResolver(shippingSchema),
-    defaultValues: { name: "", mobileNumber: "", address: "" },
+    defaultValues: { name: "", mobileNumber:user?.mobileNumber || "", address:user?.address || "" },
   });
 
   const handlePlaceOrder = async (data: ShippingForm) => {
