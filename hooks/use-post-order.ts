@@ -1,25 +1,23 @@
-import {  orderInput, OrderResponse, postOrder } from "@/actions/order";
-import { useState } from "react";
+import { orderInput, postOrder } from "@/actions/order";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function usePostOrder() {
-  const [data, setData] = useState<OrderResponse | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-  const submitOrder = async (order: orderInput) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await postOrder(order);
-      setData(response);
-      return response;
-    } catch (err: any) {
-      setError(err.message || "Failed to submit order");
-      throw err;
-    } finally {
-      setLoading(false);
-    }
+  // mutation object
+  const mutation = useMutation({
+    mutationKey: ["postOrder"],
+    mutationFn: async (order: orderInput) => await postOrder(order),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["ordersByUser"] });
+    },
+  });
+
+  // return properties explicitly
+  return {
+    data: mutation.data,
+    error: mutation.error?.message || null,
+    isLoading: mutation.isPending,     
+    submitOrder: mutation.mutateAsync,  // call to trigger mutation
   };
-
-  return { data, loading, error, submitOrder };
 }

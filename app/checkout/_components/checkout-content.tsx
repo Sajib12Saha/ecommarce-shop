@@ -47,7 +47,7 @@ export const  CheckoutContent = ({ productId }: Props) => {
   const { data: products, isLoading } = useProducts();
   const [selectedPayment, setSelectedPayment] = useState<string>("cod");
   const [orderResponse, setOrderResponse] = useState<any>(null);
-  const { submitOrder, loading: placingOrder, error } = usePostOrder();
+  const { submitOrder, isLoading: placingOrder, error } = usePostOrder();
   const {user} = useUser()
 
   const checkoutItems: CartItem[] = useMemo(() => {
