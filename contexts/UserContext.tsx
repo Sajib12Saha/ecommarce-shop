@@ -8,17 +8,8 @@ import React, {
   ReactNode,
 } from "react";
 import { jwtDecode } from "jwt-decode"; 
-import { getUser } from "@/actions/user";
+import { getUser, User } from "@/actions/user";
 
-export interface User {
-  id: string;
-  email: string;
-  name: string | null;
-  image: string | null;
-  role: string;
-  mobileNumber: string | null;
-  address: string | null;
-}
 
 interface UserContextType {
   user: User | null;

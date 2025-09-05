@@ -8,12 +8,14 @@ import { useProducts } from "@/hooks/use-products";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Zap } from "lucide-react";
+import { siteMeta } from "@/data";
 
 interface Props {
   order: dbOrder;
+  hideButton?:boolean;
 }
 
-export const InvoiceOrder = ({ order }: Props) => {
+export const InvoiceOrder = ({ order, hideButton=false }: Props) => {
   const invoiceRef = useRef<HTMLDivElement>(null);
   const { data: products } = useProducts();
   const [isLoading, setIsLoading] = useState(false)
@@ -77,7 +79,7 @@ export const InvoiceOrder = ({ order }: Props) => {
         ref={invoiceRef}
         style={{
           backgroundColor: "#fff",
-          padding: "20px",
+          padding: "12px",
           border: "1px solid #ccc",
           borderRadius: "8px",
           fontSize: "12px",
@@ -86,9 +88,9 @@ export const InvoiceOrder = ({ order }: Props) => {
       >
         {/* BRAND HEADER */}
         <div style={{ textAlign: "center", marginBottom: "10px", display:"flex", flexDirection:"column", alignItems:"center"  }}>
-          <img src="https://res.cloudinary.com/dwflowkit/image/upload/v1756633158/epahar/fsdhonmiqavvaj3odvs3.jpg" alt="Logo" width={120} height={120} style={{ marginBottom: "12px" }} />
-          <p style={{ margin: "4px 0", fontSize: "12px" }}>123 Main Street, Dhaka, Bangladesh</p>
-          <p style={{ margin: "4px 0", fontSize: "12px" }}>📞 +880 1234-567890 | 🌐 www.yourshop.com</p>
+          <img src={`${process.env.NEXT_PUBLIC_BASE_URL}/logo.jpg`} alt={siteMeta.siteName} width={120} height={120} style={{ marginBottom: "12px" }} />
+          <p style={{ margin: "4px 0", fontSize: "12px" }}>KGC Building, 2nd Floor, Near Khagrachhari Gate, Khagrachhari Sadar</p>
+          <p style={{ margin: "4px 0", fontSize: "12px" }}>📞 +880 1519558558 | 🌐 www.yourshop.com</p>
         </div>
 
         <hr style={{ margin: "16px 0" }} />
@@ -97,7 +99,7 @@ export const InvoiceOrder = ({ order }: Props) => {
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "24px" }}>
           <div>
             <h3 style={{ margin: 0, fontSize: "16px" }}>Invoice</h3>
-            <p style={{ margin: "4px 0" }}>Order ID: <strong>{order.id}</strong></p>
+            <p style={{ margin: "4px 0" }}>Order No: <strong>{order.id}</strong></p>
             <p style={{ margin: "4px 0" }}>Date: {formatDate(new Date(order.createdAt))}</p>
           </div>
           <div style={{ textAlign: "right" }}>
@@ -205,13 +207,13 @@ export const InvoiceOrder = ({ order }: Props) => {
 
         {/* FOOTER */}
         <div style={{ marginTop: "40px", textAlign: "center", fontSize: "12px", color: "#666" }}>
-          <p>Thank you for shopping with <strong>Your Shop</strong> 💚</p>
+          <p>Thank you for shopping with <strong>${siteMeta.siteName}</strong></p>
           <p>For support, contact: support@yourshop.com</p>
         </div>
       </div>
 
         {/* Control Buttons */}
-      <div className="flex flex-col-reverse md:flex-row items-center gap-4 mt-4">
+        {!hideButton &&   <div className="flex flex-col-reverse md:flex-row items-center gap-4 mt-4">
         <Button variant="outline" onClick={() => router.push("/")}>Continue Shopping</Button>
         <Button onClick={handleDownload}>
           {isLoading ? (
@@ -222,7 +224,8 @@ export const InvoiceOrder = ({ order }: Props) => {
           ) : " Download PDF"}
          
           </Button>
-      </div>
+      </div>}
+    
 
     </div>
   );

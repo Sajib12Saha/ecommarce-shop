@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import {
   Accordion,
@@ -20,6 +18,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Tag} from "lucide-react";
 import { useCategories } from "@/hooks/use-categories";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Props {
   sortBy: "price" | "category" | "createdAt";
@@ -35,8 +34,8 @@ interface Props {
   onCategoryChange?: (ids: string[]) => void;
 }
 
-export default function FilterSideBar({
-  sortBy,
+export const Filter = ({
+    sortBy,
   sortOrder,
   onSortChange,
   minPrice = 0,
@@ -44,8 +43,10 @@ export default function FilterSideBar({
   onPriceChange,
   categoryIds = [],
   onCategoryChange,
-}: Props) {
-  const { data: categories, loading } = useCategories();
+}:Props) => {
+
+
+      const { data: categories, isLoading } = useCategories();
 
   // Local price slider state
   const [price, setPrice] = useState<[number, number]>([minPrice, maxPrice]);
@@ -85,9 +86,10 @@ export default function FilterSideBar({
     onSortChange("createdAt", "desc");
   };
 
-  return (
-    <aside className="w-full lg:w-44 xl:w-60 rounded-2xl shadow-md p-4 space-y-4 hidden lg:block sticky top-2 my-4">
-      <div className="flex items-center justify-between border-b pb-3">
+
+    return (
+        <>
+            <div className="flex items-center justify-between border-b pb-3">
         <h2 className="text-lg font-semibold flex items-center gap-2">
           <Tag className="w-5 h-5 text-orange-500" /> Filters
         </h2>
@@ -148,8 +150,11 @@ export default function FilterSideBar({
           <AccordionTrigger className="flex items-center gap-2">Categories</AccordionTrigger>
           <AccordionContent>
             <div className="space-y-2">
-              {loading ? (
-                <div>Loading...</div>
+              {isLoading ? (
+                <div className=" flex items-center space-x-2">
+                    <Skeleton className="size-5 rounded-md"/>
+                    <Skeleton className="w-14 h-4 rounded-md"/>
+                </div>
               ) : categories?.data?.length ? (
                 categories.data.map((cat) => (
                   <div key={cat.id} className="flex items-center space-x-2">
@@ -170,6 +175,6 @@ export default function FilterSideBar({
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-    </aside>
-  );
+        </>
+    )
 }

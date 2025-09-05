@@ -15,6 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormField } from "@/components/ui/form";
 import { CustomForm } from "@/components/ui/custom-form";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useUser } from "@/contexts/UserContext";
 
 const shippingSchema = z.object({
   name: z.string().min(2, "নাম লিখুন"),
@@ -47,8 +48,8 @@ export const  CheckoutContent = ({ productId }: Props) => {
   const [selectedPayment, setSelectedPayment] = useState<string>("cod");
   const [orderResponse, setOrderResponse] = useState<any>(null);
   const { submitOrder, loading: placingOrder, error } = usePostOrder();
+  const {user} = useUser()
 
-  // unify items
   const checkoutItems: CartItem[] = useMemo(() => {
     if (productId && products) {
       const found = products.data.find((p) => p.id === productId);
@@ -80,6 +81,7 @@ export const  CheckoutContent = ({ productId }: Props) => {
     if (!selectedPayment) return;
 
     const orderData = {
+      userId:user?.id,
       name: data.name,
       mobileNumber: data.mobileNumber,
       address: data.address,

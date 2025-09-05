@@ -25,7 +25,7 @@ export const useProducts = (options: UseProductsOptions = {}) => {
         options.categoryIds
       ),
     staleTime: 120 * 1000,     // 2 min: don’t refetch
-    gcTime: 5 * 60 * 1000,     // v5: replaces cacheTime
+    gcTime: 10 * 60 * 1000,     // v5: replaces cacheTime
     placeholderData: (prev) => prev, // replaces keepPreviousData
   });
 };

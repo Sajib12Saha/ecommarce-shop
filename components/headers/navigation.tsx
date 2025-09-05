@@ -1,6 +1,5 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
 import { navLinks } from "@/data"
 import { ShoppingCart, Truck, User2 } from "lucide-react"
 import Link from "next/link"
@@ -10,21 +9,76 @@ import { useCart, useOpenStore } from "@/hooks/use-store"
 import { useRouter } from "next/navigation"
 import { useUser } from "@/contexts/UserContext"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
-
+import { motion } from "framer-motion"
+import { useEffect, useState } from "react"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion"
+import { useCategories } from "@/hooks/use-categories"
+import Image from "next/image"
 
 
 export function Navigation() {
+    const [headerHidden, setHeaderHidden] = useState(false);
   const router = useRouter()
   const { setOpen } = useOpenStore()
   const { cartItems} = useCart();
   const {user}= useUser()
+  const {data:categories, isLoading} = useCategories()
+   
+
+    useEffect(() => {
+    const handleScroll = () => {
+      setHeaderHidden(window.scrollY > 50); // header hidden after 50px scroll
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
 
   return (
-    <div className="fixed top-[81px] left-0 right-0 z-50 backdrop-blur-lg border-b shadow-sm hidden lg:block">
+    <motion.div
+  animate={{ top: headerHidden ? 0 : 81 }} // 81px = header height
+      transition={{ duration: 0.4, ease: "easeInOut" }}
+  className="fixed top-[81px] left-0 right-0 z-40 backdrop-blur-lg border-b shadow-sm hidden lg:block"
+>
       <div className="px-4 sm:px-6 lg:px-8 lg:py-4 max-w-[120rem] mx-auto">
         <div className="flex items-center justify-between">
-        <p className="flex items-center gap-x-0.5 text-sm font-semibold text-gray-700">  <BiCategory className="mr-2 size-4" />
-            Categories</p>
+<Accordion type="single" collapsible className="relative">
+  <AccordionItem value="categories">
+    <AccordionTrigger className="flex items-center gap-x-0.5 text-sm font-semibold text-gray-700">
+      <BiCategory className="mr-2 size-4" />
+      Categories
+    </AccordionTrigger>
+    <AccordionContent
+      className="absolute left-0 mt-2 w-56 rounded-md bg-white shadow-lg border z-50"
+    >
+      <div className="p-2 space-y-2">
+        {categories?.data.map(({id, categoryImage, name})=> (
+ <Link href={`/products?categoryId=${id}`} className="w-full flex items-center gap-x-2 group" key={id}>
+            <Image
+              src={categoryImage}
+              alt={name}
+              width={50}
+              height={50}
+           
+              className="object-cover overflow-hidden"
+              loading="lazy"
+            />
+       
+          <p
+            className=" font-semibold text-gray-700 
+                       group-hover:text-primary group-hover:underline transition-colors"
+          >
+            {name}
+          </p>
+   
+    </Link>
+        ))}
+ 
+      </div>
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>
+
 
           <nav className="flex space-x-8">
             {navLinks.map((link, index) => (
@@ -88,6 +142,6 @@ export function Navigation() {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }

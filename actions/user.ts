@@ -1,4 +1,5 @@
 import axios from "axios";
+import { GetOrdersResponse } from "./order";
 
 export type userInput = {
   name?: string;
@@ -13,7 +14,7 @@ export type User = {
   address: string | null;
   mobileNumber: string | null;
   image: string | null;
-  role: "ADMIN" | "USER";
+  role: "GOOGLE" | "FACEBOOK" | "USER";
 };
 
 export type UserResponse = {
@@ -26,7 +27,7 @@ export type UserResponse = {
 // 🔹 cache store
 let cachedUser: User | null = null;
 let cacheTimestamp: number | null = null;
-const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+const CACHE_TTL = 20 * 60 * 1000; // 20 minutes
 
 export const getUser = async (forceRefresh = false): Promise<UserResponse> => {
   try {
@@ -68,6 +69,7 @@ export const getUser = async (forceRefresh = false): Promise<UserResponse> => {
   }
 };
 
+
 export const updateUser = async (
   data: userInput
 ): Promise<UserResponse> => {
@@ -102,3 +104,5 @@ export const updateUser = async (
     };
   }
 };
+
+

@@ -47,7 +47,7 @@ export const Cart = () => {
             {cartItems.map((item, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between border-b pb-4 last:border-0"
+                className="flex items-center justify-between border-b pb-4 px-2 last:border-0"
               >
                 {/* Product Image */}
                 <Image
@@ -117,7 +117,7 @@ export const Cart = () => {
                   variant="ghost"
                   size="icon"
                   onClick={() => remove(item.id)}
-                  className="text-gray-500 hover:text-red-600"
+                  className="text-muted-foreground hover:text-red-600"
                 >
                   <Trash2 className="h-5 w-5" />
                 </Button>
@@ -137,7 +137,7 @@ export const Cart = () => {
       ) : (
         <SheetContent>
           <SheetHeader className="flex items-center justify-center h-full w-full">
-            <SheetTitle className="text-gray-600 text-lg">
+            <SheetTitle className="text-muted-foreground text-lg">
               Your cart is empty 🛒
             </SheetTitle>
           </SheetHeader>

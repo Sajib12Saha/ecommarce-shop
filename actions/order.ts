@@ -51,14 +51,28 @@ export const postOrder = async (order: orderInput): Promise<OrderResponse> => {
 };
 
 
-export const getOrders = async (page = 1, pageSize = 20): Promise<GetOrdersResponse> => {
+export const getOrders = async (
+  page = 1,
+  pageSize = 20,
+  userId?: string
+): Promise<GetOrdersResponse> => {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_URL}/api/order/get-order?page=${page}&pageSize=${pageSize}`, {
+    const url = new URL(
+      `${process.env.NEXT_PUBLIC_ADMIN_URL}/api/order/get-order`
+    );
+
+    url.searchParams.set("page", page.toString());
+    url.searchParams.set("pageSize", pageSize.toString());
+    if (userId) {
+      url.searchParams.set("userId", userId);
+    }
+
+    const res = await fetch(url.toString(), {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
-      cache: "no-store", // optional, ensures fresh data every time
+      cache: "no-store", // ensures fresh data every time
     });
 
     if (!res.ok) {

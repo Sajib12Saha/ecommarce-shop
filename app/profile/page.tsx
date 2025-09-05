@@ -26,6 +26,8 @@ import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useUser } from "@/contexts/UserContext";
 import z from "zod";
+import { PasswordMangement } from "./_components/password-mangement";
+
 
 const ProfilePage = () => {
   const [pending, setPending] = useState(false);
@@ -94,7 +96,7 @@ const ProfilePage = () => {
     { value: "profile", label: "Profile", icon: UserIcon },
     { value: "orders", label: "Orders", icon: ShoppingBag },
     { value: "password", label: "Password Management", icon: LockIcon },
-    { value: "refunds", label: "Refunds", icon: RotateCcw },
+  
   ];
 
   return (
@@ -195,7 +197,7 @@ const ProfilePage = () => {
                             Cancel
                           </Button>
                           <Button
-                            className="w-full sm:w-auto"
+                            className=""
                             type="submit"
                             disabled={pending}
                           >
@@ -261,8 +263,10 @@ const ProfilePage = () => {
                 </CardContent>
               </Card>
             </TabsContent>
-
-            <UserOrderList tabValue="orders" />
+                
+            <UserOrderList tabValue="orders" userId={user.id}/>
+            <PasswordMangement tabValue="password" disable={user.role !== "USER"} userId={user.id}/>
+     
           </Tabs>
         </CardContent>
       </Card>

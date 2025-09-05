@@ -418,7 +418,7 @@ const providerSubmit = (provider: "google" | "facebook") => {
                   <div className="w-full border-t border-gray-300" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="bg-white/80 backdrop-blur-sm px-4 text-gray-500 font-medium">Or continue with</span>
+                  <span className="bg-white/80 backdrop-blur-sm px-4 text-muted-foreground font-medium">Or continue with</span>
                 </div>
               </div>
               <div className="mt-4 lg:mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3 lg:gap-4">

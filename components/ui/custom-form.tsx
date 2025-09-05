@@ -26,6 +26,7 @@ interface Props {
   allowShowHidePassword?: boolean;
   previewImage?: string;
   options?: SelectOption[];
+  disable?:boolean;
 }
 
 export const CustomForm = ({
@@ -38,6 +39,7 @@ export const CustomForm = ({
   allowShowHidePassword = false,
   previewImage,
   options = [],
+  disable
 }: Props) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -50,6 +52,7 @@ export const CustomForm = ({
           placeholder={placeHolder}
           {...field}
           className="min-h-36"
+          disabled={disable}
         />
       );
       break;
@@ -79,6 +82,7 @@ export const CustomForm = ({
                 ? ""
                 : field.value
             }
+        disabled={disable}
           />
           {isPassword && (
             <button

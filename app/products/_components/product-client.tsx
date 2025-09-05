@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Minus, Plus, Search } from "lucide-react";
+import {  MessageSquareMore, Search, Star,} from "lucide-react";
 import RelatedProducts from "../_components/relatedProducts";
 import { useProducts } from "@/hooks/use-products";
 import { dbProduct } from "@/types/type";
@@ -24,7 +24,7 @@ export const ProductClient = ({productId}:Props) => {
   const [selectedImage, setSelectedImage] = useState(0);
   const { data: products, isLoading } = useProducts();
   const { cartItems, addItem } = useCart();
-  const { data: categories, loading: categoryLoading } = useCategories();
+  const { data: categories, isLoading: categoryLoading } = useCategories();
   const router = useRouter();
 
   const product: dbProduct | undefined = products?.data?.find(
@@ -221,7 +221,14 @@ export const ProductClient = ({productId}:Props) => {
         <TabsContent value="reviews">
           <Card>
             <CardContent className="p-6">
-              <p className="text-gray-500">No reviews yet.</p>
+                  <div className="flex items-center gap-x-4 w-full justify-center">
+ <div className="flex items-center justify-center bg-primary/20 size-14 rounded-full">
+  <Star className="size-8 fill-primary stroke-primary" />
+</div>
+
+
+                     <p className="text-muted-foreground"> No reviews yet.</p></div>
+         
             </CardContent>
           </Card>
         </TabsContent>
@@ -229,7 +236,12 @@ export const ProductClient = ({productId}:Props) => {
         <TabsContent value="comments">
           <Card>
             <CardContent className="p-6">
-              <p className="text-gray-500">No comments yet.</p>
+                            <div className="flex items-center gap-x-4 w-full justify-center">
+ <div className="flex items-center justify-center bg-primary/20 size-14 rounded-full">
+  <MessageSquareMore className="size-8  stroke-primary" />
+</div>
+              <p className="text-muted-foreground"> No comments yet.</p>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
