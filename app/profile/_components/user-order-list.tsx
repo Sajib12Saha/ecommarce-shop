@@ -37,7 +37,7 @@ export const UserOrderList = ({ tabValue, userId }: Props) => {
         <CardHeader>
           <CardTitle className="text-lg font-semibold">My Orders</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 px-2 md:px-6">
           {isLoading && (
             <div className="space-y-3">
               {[...Array(3)].map((_, i) => (
@@ -57,7 +57,7 @@ export const UserOrderList = ({ tabValue, userId }: Props) => {
           )}
 
           {!isLoading && orders?.data && orders.data.length > 0 && (
-            <Accordion type="single" collapsible className="w-full p-0 lg:p-1">
+            <Accordion type="single" collapsible className="w-full  lg:p-1">
               {orders?.data?.map((order: any) => (
                 <AccordionItem key={order.id} value={`order-${order.id}`}>
                   <AccordionTrigger>
