@@ -33,7 +33,7 @@ export const UserOrderList = ({ tabValue, userId }: Props) => {
 
   return (
     <TabsContent value={tabValue} className="space-y-4">
-      <Card className="border shadow-sm p-0 lg:p-1">
+      <Card className="border shadow-sm">
         <CardHeader>
           <CardTitle className="text-lg font-semibold">My Orders</CardTitle>
         </CardHeader>
@@ -57,7 +57,7 @@ export const UserOrderList = ({ tabValue, userId }: Props) => {
           )}
 
           {!isLoading && orders?.data && orders.data.length > 0 && (
-            <Accordion type="single" collapsible className="w-full">
+            <Accordion type="single" collapsible className="w-full p-0 lg:p-1">
               {orders?.data?.map((order: any) => (
                 <AccordionItem key={order.id} value={`order-${order.id}`}>
                   <AccordionTrigger>
