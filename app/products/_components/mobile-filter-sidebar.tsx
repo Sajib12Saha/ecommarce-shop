@@ -36,7 +36,7 @@ export const MobileFilterSideBar = ({
     
     return (
               <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger className="lg:hidden fixed z-40 top-28 -left-0.5">
+            <SheetTrigger className="lg:hidden fixed z-50 top-28 -left-0.5">
             <IoFilterCircle className="size-12 fill-primary"/>
             </SheetTrigger>
             <SheetContent className="px-4 max-w-48">

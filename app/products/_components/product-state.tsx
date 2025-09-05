@@ -27,7 +27,7 @@ export const ProductState = ({productName, categoryId}:Props) => {
   );
 
   return (
-    <div className="flex gap-6 w-full">
+    <div className="lg:flex lg:gap-6 w-full">
       <MobileFilterSideBar
           sortBy={sortBy}
         sortOrder={sortOrder}
@@ -57,7 +57,7 @@ export const ProductState = ({productName, categoryId}:Props) => {
         onCategoryChange={(ids) => setCategoryIds(ids)}
       />
 
-      <div className="flex-1 min-h-screen py-10 overflow-y-scroll">
+      <div className="flex-1 min-h-screen py-10 lg:overflow-y-scroll">
         <div className="space-y-8 px-4 lg:px-8">
           <HeadingTitle title="Browse Products" />
           <ProductsContent
