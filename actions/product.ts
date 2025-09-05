@@ -33,7 +33,7 @@ export const getProducts = async (
 
   if ([...params].length > 0) url += `?${params.toString()}`;
 
-  const res = await fetch(url, { next: { revalidate: 120 } });
+  const res = await fetch(url, { next: { revalidate: 480 } });
 
   if (!res.ok) throw new Error("Failed to load Products");
 
