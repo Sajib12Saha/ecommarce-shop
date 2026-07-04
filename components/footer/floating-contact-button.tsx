@@ -50,23 +50,26 @@ const ICONS = (whatsappNumber?: string, messengerUsername?: string, customerCare
     href: `https://wa.me/+88${whatsappNumber}?text=${encodeURIComponent("হ্যালো, আমি একটি পণ্য অর্ডার করতে চাই।")}`,
     img: "/icons/whatsapp.svg",
     label: "WhatsApp",
+    bg: "#16a34a",
   },
   {
     id: "messenger",
     href: `https://m.me/${messengerUsername}?ref=order_now`,
     img: "/icons/messenger.svg.webp",
     label: "Messenger",
+    bg: "#be123c",
   },
   {
     id: "phone",
     href: `tel:${customerCareNumber}`,
     img: null,
     label: "Phone",
+    bg: "#2563eb",
   },
 ];
 
 export const FloatingContactIcons: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const { data: businessInfo } = useBusinessInfo();
 
@@ -110,13 +113,13 @@ export const FloatingContactIcons: React.FC = () => {
         {/* Contact icons list */}
         <div
           aria-hidden={!isOpen}
-          className={`flex flex-col items-end gap-3 transition-all duration-300 origin-bottom-right ${
+          className={`flex flex-col-reverse items-end gap-3 transition-all duration-300 origin-bottom-right ${
             isOpen
               ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
               : "opacity-0 scale-75 translate-y-4 pointer-events-none"
           }`}
         >
-          {icons.map(({ id, href, img, label }) => (
+          {icons.map(({ id, href, img, label, bg }) => (
             <div key={id} className={`relative flex items-center ${isOpen ? "float-item" : ""}`}>
               <a
                 href={href}
@@ -125,7 +128,7 @@ export const FloatingContactIcons: React.FC = () => {
                 aria-label={`Contact via ${label}`}
                 onMouseEnter={() => setHoveredId(id)}
                 onMouseLeave={() => setHoveredId(null)}
-                className={`rounded-full flex items-center justify-center cursor-pointer transition-all duration-200 flex-shrink-0 no-underline ${
+                className={`relative rounded-full flex items-center justify-center cursor-pointer transition-all duration-200 flex-shrink-0 no-underline ${
                   id === "phone" ? "w-10 h-10 bg-blue-600 hover:bg-blue-700" : "w-fit h-fit"
                 } ${hoveredId === id ? "scale-110 shadow-xl" : "scale-100 shadow-md"}`}
               >
@@ -135,11 +138,23 @@ export const FloatingContactIcons: React.FC = () => {
                     alt={label}
                     width={38}
                     height={38}
-                    className="object-contain block rounded-full"
+                    className="object-contain block rounded-full z-10"
                   />
                 ) : (
-                  <PhoneSvg />
+                  <span className="relative z-10 flex items-center justify-center">
+                    <PhoneSvg />
+                  </span>
                 )}
+
+                {/* Pulsing ring animation, matching MobileHeader style */}
+                <div
+                  className="absolute inset-1 border rounded-full animate-ping duration-200 pointer-events-none"
+                  style={{ borderColor: bg }}
+                />
+                <div
+                  className="absolute -inset-0.5 border rounded-full animate-ping duration-100 pointer-events-none"
+                  style={{ borderColor: bg }}
+                />
               </a>
 
               {/* Tooltip */}

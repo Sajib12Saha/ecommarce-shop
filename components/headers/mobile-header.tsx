@@ -37,19 +37,19 @@ export function MobileHeader() {
    const {user} = useUser()
      const { setOpen } = useOpenStore();
   const { cartItems } = useCart();
-     const { data: businessInfo} = useBusinessInfo();
+    //  const { data: businessInfo} = useBusinessInfo();
 
- const contact = [
+//  const contact = [
     
  
-    { href: `https://wa.me/+88${businessInfo?.data?.whatsappNumber}?text=হ্যালো, আমি একটি পণ্য অর্ডার করতে চাই।`, Icon: "/icons/whatsapp.svg", bg:"#16a34a",},
+//     { href: `https://wa.me/+88${businessInfo?.data?.whatsappNumber}?text=হ্যালো, আমি একটি পণ্য অর্ডার করতে চাই।`, Icon: "/icons/whatsapp.svg", bg:"#16a34a",},
 
-    {
-    href: `https://m.me/${businessInfo?.data?.messengerUsername}?ref=order_now`,
-    Icon: "/icons/messenger.svg.webp",
-    bg: "#be123c",
-  },
-];
+//     {
+//     href: `https://m.me/${businessInfo?.data?.messengerUsername}?ref=order_now`,
+//     Icon: "/icons/messenger.svg.webp",
+//     bg: "#be123c",
+//   },
+// ];
 
 
 
@@ -159,7 +159,7 @@ export function MobileHeader() {
 
           </div>
      
- <div className="absolute left-1/2 top-1/2 -translate-x-1/4 -translate-y-1/2">
+ {/* <div className="absolute left-1/2 top-1/2 -translate-x-1/4 -translate-y-1/2">
  <div className="flex items-center gap-4 w-full ">
               {contact.map((s, i) => (
                 <a
@@ -188,7 +188,7 @@ export function MobileHeader() {
               ))}
     </div>
  </div>
-
+ */}
 
           <div className="flex items-center gap-x-2">
         

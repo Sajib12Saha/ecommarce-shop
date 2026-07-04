@@ -120,6 +120,28 @@
   body {
     @apply bg-background text-foreground;
   }
+    html {
+    @apply font-sans;
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary) transparent;
+  }
+    html::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  html::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+html::-webkit-scrollbar-thumb {
+  background-color: var(--primary);
+  border-radius: 10px;
+}
+
+html::-webkit-scrollbar-thumb:hover {
+  opacity: 0.8;
+}
+
 }
 
 .prose ul,
