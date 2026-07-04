@@ -11,6 +11,12 @@ import { Card } from "@/components/ui/card";
 import {siteMeta } from "@/data";
 import { AnimatePresence, motion } from "framer-motion";
 import { useBusinessInfo } from "@/hooks/use-business-info";
+import {
+  WhatsAppSvg,
+  MessengerSvg,
+  BRAND_COLORS,
+  FacebookSvg,
+} from "@/components/social-icons";
 
 
 export function Header() {
@@ -41,17 +47,35 @@ export function Header() {
   }, []);
 
   const socialLinks = [
-    { href: `https://www.facebook.com/${businessInfo?.data?.messengerUsername}`, Icon: "/icons/facebook.svg", bg:"#1d4ed8",},
-
-    { href: `https://wa.me/+88${businessInfo?.data?.whatsappNumber}?text=হ্যালো, আমি একটি পণ্য অর্ডার করতে চাই।`, Icon: "/icons/whatsapp.svg", bg:"#16a34a",},
-
     {
-    href: `https://m.me/${businessInfo?.data?.messengerUsername}?ref=order_now`,
-    Icon: "/icons/messenger.svg.webp",
-    bg: "#be123c",
-  },
-   
+      id: "facebook",
+      href: `https://www.facebook.com/${businessInfo?.data?.messengerUsername}`,
+      bg: BRAND_COLORS.facebook,
+    },
+    {
+      id: "whatsapp",
+      href: `https://wa.me/+88${businessInfo?.data?.whatsappNumber}?text=${encodeURIComponent("হ্যালো, আমি একটি পণ্য অর্ডার করতে চাই।")}`,
+      bg: BRAND_COLORS.whatsapp,
+    },
+    {
+      id: "messenger",
+      href: `https://m.me/${businessInfo?.data?.messengerUsername}?ref=order_now`,
+      bg: BRAND_COLORS.messenger,
+    },
   ];
+
+  const renderGlyph = (id: string) => {
+    switch (id) {
+      case "facebook":
+        return <FacebookSvg size={32} />;
+      case "whatsapp":
+        return <WhatsAppSvg size={32} />;
+      case "messenger":
+        return <MessengerSvg size={32} />;
+      default:
+        return null;
+    }
+  };
 
 
 
@@ -168,28 +192,25 @@ export function Header() {
 
   <div className="flex flex-col items-end gap-1 max-w-md">
     <div className="flex items-center gap-8">
-      {socialLinks.map((s, i) => (
+      {socialLinks.map(({ id, href, bg }) => (
         <a
-          key={i}
-          href={s.href}
+          key={id}
+          href={href}
           target="_blank"
           rel="noopener noreferrer"
+          aria-label={id}
           className="relative flex items-center justify-center w-8 h-8 z-50"
         >
-          <Image
-            src={s.Icon}
-            alt={siteMeta.siteName}
-            width={24}
-            height={24}
-            className="rounded-full overflow-hidden z-10"
-          />
+          <span className="relative z-10 flex items-center justify-center w-full h-full rounded-full overflow-hidden">
+            {renderGlyph(id)}
+          </span>
           <div
-            className="absolute inset-1 border-2 rounded-full animate-ping duration-200"
-            style={{ borderColor: s.bg }}
+            className="absolute inset-1 border-2 rounded-full animate-ping duration-200 pointer-events-none"
+            style={{ borderColor: bg }}
           />
               <div
-            className="absolute -inset-0.5 border-2 rounded-full animate-ping duration-100"
-            style={{ borderColor: s.bg }}
+            className="absolute -inset-0.5 border-2 rounded-full animate-ping duration-100 pointer-events-none"
+            style={{ borderColor: bg }}
           />
         </a>
       ))}

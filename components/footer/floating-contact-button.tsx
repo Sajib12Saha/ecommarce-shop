@@ -1,70 +1,33 @@
 "use client";
 
 import { useBusinessInfo } from "@/hooks/use-business-info";
-import Image from "next/image";
 import React, { useState } from "react";
-
-const MessageIcon: React.FC<{ isOpen: boolean }> = ({ isOpen }) => (
-  <svg
-    width={28}
-    height={28}
-    viewBox="0 0 24 24"
-    fill="#fff"
-    stroke="#fff"
-    strokeWidth={2}
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-    style={{
-      transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
-      transition: "transform 0.3s ease",
-    }}
-  >
-    {isOpen ? (
-      <>
-        <line x1="18" y1="6" x2="6" y2="18" />
-        <line x1="6" y1="6" x2="18" y2="18" />
-      </>
-    ) : (
-     <>
-
-    <path d="M21 12a9 9 0 0 0-9-9 9 9 0 0 0-9 9c0 1.9.6 3.7 1.6 5.2L3 21l3.8-1.6A9 9 0 0 0 12 21a9 9 0 0 0 9-9z" />
-
-<line x1="8" y1="10" x2="16" y2="10" stroke="#d4a017" strokeWidth={1.5} strokeLinecap="round" />
-<line x1="8" y1="13" x2="16" y2="13" stroke="#d4a017" strokeWidth={1.5} strokeLinecap="round" />
-<line x1="8" y1="16" x2="13" y2="16" stroke="#d4a017" strokeWidth={1.5} strokeLinecap="round" />
-  </>
-    )}
-  </svg>
-);
-
-const PhoneSvg = () => (
-  <svg width={24} height={24} viewBox="0 0 24 24" fill="white" aria-hidden="true">
-    <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" />
-  </svg>
-);
+import {
+  WhatsAppSvg,
+  MessengerSvg,
+  PhoneSvg,
+  MessageIcon,
+  BRAND_COLORS,
+} from "@/components/social-icons";
 
 const ICONS = (whatsappNumber?: string, messengerUsername?: string, customerCareNumber?: string) => [
   {
     id: "whatsapp",
     href: `https://wa.me/+88${whatsappNumber}?text=${encodeURIComponent("হ্যালো, আমি একটি পণ্য অর্ডার করতে চাই।")}`,
-    img: "/icons/whatsapp.svg",
     label: "WhatsApp",
-    bg: "#16a34a",
+    bg: BRAND_COLORS.whatsapp,
   },
   {
     id: "messenger",
     href: `https://m.me/${messengerUsername}?ref=order_now`,
-    img: "/icons/messenger.svg.webp",
     label: "Messenger",
-    bg: "#be123c",
+    bg: BRAND_COLORS.messenger,
   },
   {
     id: "phone",
     href: `tel:${customerCareNumber}`,
-    img: null,
     label: "Phone",
-    bg: "#2563eb",
+    bg: BRAND_COLORS.phone,
   },
 ];
 
@@ -78,6 +41,23 @@ export const FloatingContactIcons: React.FC = () => {
     businessInfo?.data?.messengerUsername!,
     businessInfo?.data?.customerCareNumber!
   );
+
+  const renderGlyph = (id: string) => {
+    switch (id) {
+      case "whatsapp":
+        return <WhatsAppSvg size={40} />;
+      case "messenger":
+        return <MessengerSvg size={40} />;
+      case "phone":
+        return (
+          <span className="relative z-10 flex items-center justify-center">
+            <PhoneSvg />
+          </span>
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <>
@@ -119,7 +99,7 @@ export const FloatingContactIcons: React.FC = () => {
               : "opacity-0 scale-75 translate-y-4 pointer-events-none"
           }`}
         >
-          {icons.map(({ id, href, img, label, bg }) => (
+          {icons.map(({ id, href, label, bg }) => (
             <div key={id} className={`relative flex items-center ${isOpen ? "float-item" : ""}`}>
               <a
                 href={href}
@@ -128,23 +108,13 @@ export const FloatingContactIcons: React.FC = () => {
                 aria-label={`Contact via ${label}`}
                 onMouseEnter={() => setHoveredId(id)}
                 onMouseLeave={() => setHoveredId(null)}
-                className={`relative rounded-full flex items-center justify-center cursor-pointer transition-all duration-200 flex-shrink-0 no-underline ${
-                  id === "phone" ? "w-10 h-10 bg-blue-600 hover:bg-blue-700" : "w-fit h-fit"
+                className={`relative w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition-all duration-200 flex-shrink-0 no-underline ${
+                  id === "phone" ? "bg-blue-600 hover:bg-blue-700" : ""
                 } ${hoveredId === id ? "scale-110 shadow-xl" : "scale-100 shadow-md"}`}
               >
-                {img ? (
-                  <Image
-                    src={img}
-                    alt={label}
-                    width={38}
-                    height={38}
-                    className="object-contain block rounded-full z-10"
-                  />
-                ) : (
-                  <span className="relative z-10 flex items-center justify-center">
-                    <PhoneSvg />
-                  </span>
-                )}
+                <span className="relative z-10 flex items-center justify-center w-full h-full rounded-full overflow-hidden">
+                  {renderGlyph(id)}
+                </span>
 
                 {/* Pulsing ring animation, matching MobileHeader style */}
                 <div
