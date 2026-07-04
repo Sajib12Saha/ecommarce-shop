@@ -64,9 +64,15 @@ export const MessengerSvg: React.FC<IconProps> = ({ size = 32, className }) => (
       </linearGradient>
     </defs>
     <circle cx="24" cy="24" r="24" fill="url(#messengerGradient)" />
+    {/* Bubble outline */}
     <path
       fill="#fff"
-      d="M24 12c-6.9 0-12.5 5.17-12.5 11.55 0 3.63 1.82 6.87 4.66 8.98v4.4l4.26-2.34c1.14.31 2.35.48 3.58.48 6.9 0 12.5-5.17 12.5-11.52C36.5 17.17 30.9 12 24 12Zm1.24 15.53-3.19-3.4-6.22 3.4 6.84-7.26 3.27 3.4 6.15-3.4-6.85 7.26Z"
+      d="M24 12c-6.9 0-12.5 5.17-12.5 11.55 0 3.63 1.82 6.87 4.66 8.98v4.4l4.26-2.34c1.14.31 2.35.48 3.58.48 6.9 0 12.5-5.17 12.5-11.52C36.5 17.17 30.9 12 24 12Z"
+    />
+    {/* Bolt glyph — drawn as its own solid shape so it never renders as a transparent cutout */}
+    <path
+      fill="#fff"
+      d="M25.24 27.53 22.05 24.13 15.83 27.53 22.67 20.27 25.94 23.67 32.09 20.27 25.24 27.53Z"
     />
   </svg>
 );
@@ -127,6 +133,6 @@ export const MessageIcon: React.FC<{ isOpen: boolean; size?: number; className?:
 export const BRAND_COLORS = {
   facebook: "#1877F2",
   whatsapp: "#25D366",
-  messenger: "#0068FF",
+  messenger: "#8A3AF9",
   phone: "#2563eb",
 } as const;
