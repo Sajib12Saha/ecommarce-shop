@@ -46,33 +46,24 @@ export const WhatsAppSvg: React.FC<IconProps> = ({ size = 32, className }) => (
   </svg>
 );
 
-/** Messenger — official diagonal gradient circle badge with white lightning-chat glyph */
+/** Messenger — authentic blob-shaped badge, solid blue with white bolt glyph */
 export const MessengerSvg: React.FC<IconProps> = ({ size = 32, className }) => (
   <svg
     width={size}
     height={size}
-    viewBox="0 0 48 48"
+    viewBox="0 0 512 512"
     aria-hidden="true"
     className={className}
   >
-    <defs>
-      <linearGradient id="messengerGradient" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stopColor="#00B2FF" />
-        <stop offset="0.45" stopColor="#8A3AF9" />
-        <stop offset="0.75" stopColor="#F63A85" />
-        <stop offset="1" stopColor="#FFB25E" />
-      </linearGradient>
-    </defs>
-    <circle cx="24" cy="24" r="24" fill="url(#messengerGradient)" />
-    {/* Bubble outline */}
+    {/* Authentic Messenger blob silhouette, solid blue */}
     <path
-      fill="#fff"
-      d="M24 12c-6.9 0-12.5 5.17-12.5 11.55 0 3.63 1.82 6.87 4.66 8.98v4.4l4.26-2.34c1.14.31 2.35.48 3.58.48 6.9 0 12.5-5.17 12.5-11.52C36.5 17.17 30.9 12 24 12Z"
+      fill="#0084FF"
+      d="M256.55 8C116.52 8 8 110.34 8 248.57c0 72.3 29.71 134.78 78.07 177.94 8.35 7.51 6.63 11.86 8.05 58.23A19.92 19.92 0 0 0 122 502.31c52.91-23.3 53.59-25.14 62.56-22.7C337.85 521.8 504 423.7 504 248.57 504 110.34 396.59 8 256.55 8z"
     />
-    {/* Bolt glyph — drawn as its own solid shape so it never renders as a transparent cutout */}
+    {/* Bolt glyph, its own solid white shape layered on top (never a cutout) */}
     <path
       fill="#fff"
-      d="M25.24 27.53 22.05 24.13 15.83 27.53 22.67 20.27 25.94 23.67 32.09 20.27 25.24 27.53Z"
+      d="M405.79 193.13l-73 115.57a37.37 37.37 0 0 1-53.91 9.93l-58.08-43.47a15 15 0 0 0-18 0l-78.37 59.44c-10.46 7.93-24.16-4.6-17.11-15.67l73-115.57a37.36 37.36 0 0 1 53.91-9.93l58.06 43.46a15 15 0 0 0 18 0l78.41-59.38c10.44-7.98 24.14 4.54 17.09 15.62z"
     />
   </svg>
 );
@@ -133,6 +124,6 @@ export const MessageIcon: React.FC<{ isOpen: boolean; size?: number; className?:
 export const BRAND_COLORS = {
   facebook: "#1877F2",
   whatsapp: "#25D366",
-  messenger: "#8A3AF9",
+  messenger: "#0084FF",
   phone: "#2563eb",
 } as const;
