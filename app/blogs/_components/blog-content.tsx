@@ -9,6 +9,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { BlogCard } from "./blog-card";
 
+
+
 interface Props {
   initialPage: number;
 }
@@ -68,6 +70,8 @@ export const BlogContent = ({ initialPage }: Props) => {
               <ArrowRight className="size-4" />
             </Link>
           </div>
+         
+      
         </>
       ) : (
         <p className="text-center text-muted-foreground flex items-center justify-center w-full h-60">
