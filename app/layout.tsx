@@ -7,7 +7,6 @@ import { FeaturesSection } from "@/components/sections/features-section";
 import { Toaster } from "@/components/ui/sonner";
 import { UserProvider } from "@/contexts/UserContext";
 import { Cart } from "@/components/cart";
-import { MobileFooterNavbar } from "@/components/footer/mobile-footer-navbar";
 import { siteMeta } from "@/data";
 import { ReactQueryClientProvider } from "@/provider/queryClient-provider";
 import TopLoadingBar from "@/components/top-loading-bar";

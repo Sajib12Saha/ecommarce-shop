@@ -1,11 +1,6 @@
 import React from "react";
 
-/**
- * Centralized SVG icon library.
- * All social / contact icons used across the app (Header, MobileHeader,
- * FloatingContactIcons, etc.) live here so there is a single source of
- * truth for colors, gradients, and markup.
- */
+
 
 export interface IconProps {
   size?: number;

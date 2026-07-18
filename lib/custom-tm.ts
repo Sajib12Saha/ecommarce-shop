@@ -2,6 +2,49 @@ import { io, Socket } from "socket.io-client";
 import { generateEventId, getAllCookies, getClientId, getDocumentInfo, getPageInfo, getSessionId, getUserInfo } from "./analytics-core";
 import { getClientIp } from "./get-ip";
 
+const normalizeEcommerce = (ecommerce: any) => {
+  if (!ecommerce) return ecommerce;
+
+  return {
+    ...ecommerce,
+    value: ecommerce.value !== undefined ? Number(ecommerce.value) : undefined,
+    items: Array.isArray(ecommerce.items)
+      ? ecommerce.items.map((item: any) => ({
+          ...item,
+          price: item.price !== undefined ? Number(item.price) : undefined,
+          discount: item.discount !== undefined ? Number(item.discount) : 0,
+          quantity: item.quantity !== undefined ? Number(item.quantity) : 1,
+        }))
+      : ecommerce.items,
+  };
+};
+
+export const trackEcommerceEvent = (
+  eventName: string,
+  ecommerce?: any,
+  extra?: Record<string, any>
+): void => {
+  const normalized = normalizeEcommerce(ecommerce);
+
+  emitEvent(eventName, {
+    ecommerce: normalized,
+    event_category: 'ecommerce',
+    event_label: eventName,
+    ...extra,
+  });
+};
+
+
+export const trackPageView = (pageName?: string, additionalData?: Record<string, any>) => {
+  emitEvent('page_view', {
+    page_name:  document.title || pageName,
+    page_path: window.location.pathname,
+    page_url: window.location.href,
+    ...additionalData
+  });
+};
+
+
 let socket: Socket;
 
 export const getSocket = () => {
@@ -50,6 +93,10 @@ export const emitEvent = (eventName: string, payload?: EventPayload): void => {
     }
   };
 
+    console.log(`[emitEvent] "${eventName}"`, {
+    event: eventName,
+    ...enrichedPayload,
+  });
 
   socket.emit("event", {
     event: eventName,
@@ -58,44 +105,3 @@ export const emitEvent = (eventName: string, payload?: EventPayload): void => {
 };
 
 
-const normalizeEcommerce = (ecommerce: any) => {
-  if (!ecommerce) return ecommerce;
-
-  return {
-    ...ecommerce,
-    value: ecommerce.value !== undefined ? Number(ecommerce.value) : undefined,
-    items: Array.isArray(ecommerce.items)
-      ? ecommerce.items.map((item: any) => ({
-          ...item,
-          price: item.price !== undefined ? Number(item.price) : undefined,
-          discount: item.discount !== undefined ? Number(item.discount) : 0,
-          quantity: item.quantity !== undefined ? Number(item.quantity) : 1,
-        }))
-      : ecommerce.items,
-  };
-};
-
-export const trackEcommerceEvent = (
-  eventName: string,
-  ecommerce?: any,
-  extra?: Record<string, any>
-): void => {
-  const normalized = normalizeEcommerce(ecommerce);
-
-  emitEvent(eventName, {
-    ecommerce: normalized,
-    event_category: 'ecommerce',
-    event_label: eventName,
-    ...extra,
-  });
-};
-
-
-export const trackPageView = (pageName?: string, additionalData?: Record<string, any>) => {
-  emitEvent('page_view', {
-    page_name:  document.title || pageName,
-    page_path: window.location.pathname,
-    page_url: window.location.href,
-    ...additionalData
-  });
-};
