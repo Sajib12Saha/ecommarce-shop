@@ -8,6 +8,7 @@ export type dbProductwihtoutAll = {
     name: string;
     productImage: string;
     price: number;
+    categoryId: string;
     discountPrice?: number;
   kgUnit?:     Record<number, UnitPricing>;
   piecesUnit?: Record<number, UnitPricing>;

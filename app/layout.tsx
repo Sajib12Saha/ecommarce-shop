@@ -119,7 +119,7 @@ export default function RootLayout({
         <ReactQueryClientProvider>
         <TrackingProvider>
           <UserProvider>
-            <main className="max-w-[120rem] mx-auto">
+            <main className="max-w-7xl mx-auto">
               <Navbar />
               <div className="mt-16 lg:mt-34">
                 {children}

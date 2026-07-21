@@ -1,7 +1,9 @@
 import { create } from "zustand";
+import { persist, createJSONStorage, StateStorage } from "zustand/middleware";
 import { dbProductwihtoutAll } from "@/actions/product";
 
 export interface CartItem extends dbProductwihtoutAll {
+  cartKey: string;
   cartQuantity: number;
   selectedUnit?: string | null;
   unitLabel?: string | null;
@@ -9,50 +11,101 @@ export interface CartItem extends dbProductwihtoutAll {
 
 interface ProductStore {
   cartItems: CartItem[];
-  addItem: (item: dbProductwihtoutAll, quantity?: number, selectedUnit?: string | null, unitLabel?: string | null) => void;
-  removeItem: (id: string) => void;
-  updateQuantity: (id: string, quantity: number) => void;
+  addItem: (
+    item: dbProductwihtoutAll,
+    quantity?: number,
+    selectedUnit?: string | null,
+    unitLabel?: string | null
+  ) => void;
+  removeItem: (cartKey: string) => void;
+  updateQuantity: (cartKey: string, quantity: number) => void;
+  clearCart: () => void;
 }
 
-export const useCart = create<ProductStore>((set) => ({
-  cartItems: [],
+// ---- expiry config ----
+const CART_EXPIRY_MS = 24 * 60 * 60 * 1000; // 1 day
 
-  addItem: (item, quantity = 1, selectedUnit = null, unitLabel = null) =>
-    set((state) => {
-      // unique cart key = product id + unit (so 2kg and 5kg are separate cart items)
-      const cartKey = selectedUnit ? `${item.id}-${selectedUnit}${unitLabel}` : item.id;
-      const existingItem = state.cartItems.find((cartItem) => cartItem.id === cartKey);
+// wraps localStorage to add a timestamp on write and check it on read
+const expiringStorage: StateStorage = {
+  getItem: (name) => {
+    const raw = localStorage.getItem(name);
+    if (!raw) return null;
 
-      if (existingItem) {
-        return {
-          cartItems: state.cartItems.map((cartItem) =>
-            cartItem.id === cartKey
-              ? { ...cartItem, cartQuantity: cartItem.cartQuantity + quantity }
-              : cartItem
-          ),
-        };
+    try {
+      const { state, timestamp } = JSON.parse(raw);
+      if (Date.now() - timestamp > CART_EXPIRY_MS) {
+        localStorage.removeItem(name);
+        return null; // expired -> treat as empty
       }
+      return JSON.stringify({ state });
+    } catch {
+      localStorage.removeItem(name);
+      return null;
+    }
+  },
+  setItem: (name, value) => {
+    const { state } = JSON.parse(value);
+    localStorage.setItem(name, JSON.stringify({ state, timestamp: Date.now() }));
+  },
+  removeItem: (name) => localStorage.removeItem(name),
+};
 
-      return {
-        cartItems: [
-          ...state.cartItems,
-          { ...item, id: cartKey, cartQuantity: quantity, selectedUnit, unitLabel },
-        ],
-      };
+export const useCart = create<ProductStore>()(
+  persist(
+    (set) => ({
+      cartItems: [],
+
+      addItem: (item, quantity = 1, selectedUnit = null, unitLabel = null) =>
+        set((state) => {
+          const cartKey = selectedUnit
+            ? `${item.id}-${selectedUnit}${unitLabel}`
+            : String(item.id);
+
+          const existingItem = state.cartItems.find(
+            (cartItem) => cartItem.cartKey === cartKey
+          );
+
+          if (existingItem) {
+            return {
+              cartItems: state.cartItems.map((cartItem) =>
+                cartItem.cartKey === cartKey
+                  ? { ...cartItem, cartQuantity: cartItem.cartQuantity + quantity }
+                  : cartItem
+              ),
+            };
+          }
+
+          return {
+            cartItems: [
+              ...state.cartItems,
+              { ...item, cartKey, cartQuantity: quantity, selectedUnit, unitLabel },
+            ],
+          };
+        }),
+
+      removeItem: (cartKey) =>
+        set((state) => ({
+          cartItems: state.cartItems.filter((item) => item.cartKey !== cartKey),
+        })),
+
+      updateQuantity: (cartKey, quantity) =>
+        set((state) => ({
+          cartItems: state.cartItems.map((item) =>
+            item.cartKey === cartKey
+              ? { ...item, cartQuantity: Math.max(quantity, 1) }
+              : item
+          ),
+        })),
+
+      clearCart: () => set({ cartItems: [] }),
     }),
-
-  removeItem: (id) =>
-    set((state) => ({
-      cartItems: state.cartItems.filter((item) => item.id !== id),
-    })),
-
-  updateQuantity: (id, quantity) =>
-    set((state) => ({
-      cartItems: state.cartItems.map((item) =>
-        item.id === id ? { ...item, cartQuantity: Math.max(quantity, 1) } : item
-      ),
-    })),
-}));
+    {
+      name: "cart-storage",
+      storage: createJSONStorage(() => expiringStorage),
+      partialize: (state) => ({ cartItems: state.cartItems }),
+    }
+  )
+);
 
 interface GlobalState {
   open: boolean;

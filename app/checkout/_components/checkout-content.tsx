@@ -1,51 +1,26 @@
 "use client";
 
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { CartItem, useCart } from "@/hooks/use-store";
 import { useProducts } from "@/hooks/use-products";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import { Zap } from "lucide-react";
 import { InvoiceOrder } from "./invoice-order";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormField } from "@/components/ui/form";
-import { CustomForm } from "@/components/ui/custom-form";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useUser } from "@/contexts/UserContext";
-import { useCustomMutation,  } from "@/hooks/use-custom-query";
+import { useCustomMutation } from "@/hooks/use-custom-query";
 import { postOrder } from "@/actions/order";
 import { pushToDataLayer } from "@/lib/gtm";
-import { siteMeta } from "@/data";
+import {  siteMeta } from "@/data";
 import { dbOrder } from "@/types/type";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { trackEcommerceEvent } from "@/lib/custom-tm";
-
-
-
-const shippingSchema = z.object({
-  name: z.string().min(2, "নাম লিখুন").max(20, "সর্বোচ্চ ৩০ অক্ষর"),
-  mobileNumber: z
-    .string()
-    .regex(/^(?:\+88)?01[3-9]\d{8}$/, "একটি সঠিক মোবাইল নাম্বার লিখুন"),
-  address: z.string().min(5, "ঠিকানা লিখুন"),
-});
-
-type ShippingForm = z.infer<typeof shippingSchema>;
-
-const paymentMethods = [
-  {
-    id: "cod",
-    name: "Cash on Delivery",
-    description: "Pay when the product arrives at your door.",
-    gradient: "bg-gradient-to-tr from-gray-100 to-gray-200",
-    textColor: "text-gray-800",
-    image: "/logo/cod.png",
-  },
-];
-
+import { ShippingPaymentForm, shippingSchema, ShippingForm } from "./shipping-payment-form";
+import { CartItemList } from "./cart-item-list";
+import { CouponInput, CouponResult } from "./coupon-input";
+import { ShippingMethod, ShippingMethodSelector } from "./shipping-method-selector";
+import { OrderSummary } from "./order-summary";
+import { useDeliveryCharges } from "@/hooks/use-delivery-charges";
 
 function getCookie(name: string) {
   if (typeof document === "undefined") return null;
@@ -59,11 +34,35 @@ function getCookie(name: string) {
 }
 
 export const CheckoutContent = () => {
-  const { cartItems } = useCart();
+  const { cartItems, clearCart } = useCart();
   const { data: products, isLoading } = useProducts();
   const [selectedPayment, setSelectedPayment] = useState<string>("cod");
   const [orderResponse, setOrderResponse] = useState<dbOrder | null>(null);
   const { user } = useUser();
+
+  const [appliedCoupon, setAppliedCoupon] = useState<CouponResult | null>(null);
+  const { data: deliveryChargeRes } = useDeliveryCharges();
+  const charges = deliveryChargeRes?.data;
+
+  const shippingMethods: ShippingMethod[] = useMemo(() => {
+    if (!charges) return [];
+    return [
+      { id: "insideDhaka", label: "Inside Dhaka", cost: charges.insideDhaka ?? 0 },
+      { id: "outsideDhaka", label: "Outside Dhaka", cost: charges.outsideDhaka ?? 0 },
+      { id: "postOffice", label: "Post Office", cost: charges.postOffice ?? 0 },
+    ];
+  }, [charges]);
+
+  const [shippingMethodId, setShippingMethodId] = useState<string>("");
+
+  useEffect(() => {
+    if (shippingMethods.length > 0 && !shippingMethodId) {
+      setShippingMethodId(shippingMethods[0].id);
+    }
+  }, [shippingMethods, shippingMethodId]);
+
+  const selectedShipping =
+    shippingMethods.find((m) => m.id === shippingMethodId) ?? shippingMethods[0] ?? { id: "", label: "", cost: 0 };
 
   const [fbp, setFbp] = useState<string | null>(null);
   const [fbc, setFbc] = useState<string | null>(null);
@@ -87,91 +86,93 @@ export const CheckoutContent = () => {
   const [irclickid, setIrclickid] = useState<string | null>(null);
   const [awc, setAwc] = useState<string | null>(null);
 
+  const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const unitParam = searchParams.get("unit");
   const productId = searchParams.get("productId");
-  const qty = searchParams.get("qty")
+  const qty = searchParams.get("qty");
 
+  useEffect(() => {
+    setFbp(getCookie("_fbp"));
+    setFbc(getCookie("_fbc"));
+    setttpCookie(getCookie("_ttp"));
+    setTtclidValue(getCookie("ttclid"));
+    setGclid(getCookie("gclid"));
+    setLi_fat_id(getCookie("li_fat_id"));
+    setGbraid(getCookie("gbraid"));
+    setWbraid(getCookie("wbraid"));
+    setDclid(getCookie("dclid"));
+    setUuid(getCookie("uuid"));
+    setMsclkid(getCookie("msclkid"));
+    setFbclid(getCookie("fbclid"));
+    setTwclid(getCookie("twclid"));
+    setRdt_cid(getCookie("rdt_cid"));
+    setEpik(getCookie("epik"));
+    setScCid(getCookie("ScCid"));
+    setSccid(getCookie("sccid"));
+    setQclid(getCookie("qclid"));
+    setIrclickid(getCookie("irclickid"));
+    setAwc(getCookie("awc"));
+  }, []);
 
-useEffect(() => {
-  setFbp(getCookie("_fbp"));
-  setFbc(getCookie("_fbc"));
-  setttpCookie(getCookie("_ttp"));
-  setTtclidValue(getCookie("ttclid"));
-  setGclid(getCookie("gclid"));
-  setLi_fat_id(getCookie('li_fat_id'));
-  setGbraid(getCookie('gbraid'));
-  setWbraid(getCookie('wbraid'));
-  setDclid(getCookie('dclid'));
-  setUuid(getCookie('uuid'));
-  setMsclkid(getCookie('msclkid'));
-  setFbclid(getCookie('fbclid'));
-  setTwclid(getCookie('twclid'));
-  setRdt_cid(getCookie('rdt_cid'));
-  setEpik(getCookie('epik'));
-  setScCid(getCookie('ScCid'));
-  setSccid(getCookie('sccid'));
-  setQclid(getCookie('qclid'));
-  setIrclickid(getCookie('irclickid'));
-  setAwc(getCookie('awc'));
+  const checkoutItems: CartItem[] = useMemo(() => {
+    if (productId && products) {
+      const found = products.data.find((p) => p.id === productId);
+      if (!found) return [];
 
-}, []);
+      let activePrice = found.price;
+      let activeDiscountPrice = found.discountPrice;
+      let selectedUnit: string | null = null;
+      let unitLabel: string | null = null;
 
+      if (unitParam) {
+        type UnitMap = Record<string, { price: number; discountPrice: number }>;
 
-const checkoutItems: CartItem[] = useMemo(() => {
-  if (productId && products) {
-    const found = products.data.find((p) => p.id === productId);
-    if (!found) return [];
+        const kg = found.kgUnit && typeof found.kgUnit === "object" && Object.keys(found.kgUnit).length > 0
+          ? (found.kgUnit as UnitMap) : null;
+        const gram = found.gramUnit && typeof found.gramUnit === "object" && Object.keys(found.gramUnit).length > 0
+          ? (found.gramUnit as UnitMap) : null;
+        const pcs = found.piecesUnit && typeof found.piecesUnit === "object" && Object.keys(found.piecesUnit).length > 0
+          ? (found.piecesUnit as UnitMap) : null;
 
-    let activePrice = found.price;
-    let activeDiscountPrice = found.discountPrice;
+        const unitMap = kg ?? gram ?? pcs ?? null;
 
+        const keyMatch = unitParam.match(/^(\d+(?:\.\d+)?)/);
+        const labelMatch = unitParam.match(/[a-zA-Z]+$/);
+        const key = keyMatch?.[1] ?? null;
 
-if (unitParam) {
-  type UnitMap = Record<string, { price: number; discountPrice: number }>;
+        if (unitMap && key && unitMap[key]) {
+          activePrice = unitMap[key].price;
+          activeDiscountPrice = unitMap[key].discountPrice;
+          selectedUnit = key;
+          unitLabel = labelMatch?.[0] ?? null;
+        }
+      }
 
-  const kg = found.kgUnit && typeof found.kgUnit === "object" && Object.keys(found.kgUnit).length > 0
-    ? (found.kgUnit as UnitMap) : null;
-  const gram = found.gramUnit && typeof found.gramUnit === "object" && Object.keys(found.gramUnit).length > 0
-    ? (found.gramUnit as UnitMap) : null;
-  const pcs = found.piecesUnit && typeof found.piecesUnit === "object" && Object.keys(found.piecesUnit).length > 0
-    ? (found.piecesUnit as UnitMap) : null;
+      return [{
+        ...found,
+        cartKey: selectedUnit ? `${found.id}-${selectedUnit}${unitLabel}` : found.id,
+        price: activePrice,
+        discountPrice: activeDiscountPrice,
+        cartQuantity: qty ? parseInt(qty) : 1,
+        selectedUnit,
+        unitLabel,
+      }];
+    }
+    return cartItems;
+  }, [productId, products, cartItems, qty, unitParam]);
 
-  const unitMap = kg ?? gram ?? pcs ?? null;
-
-  const keyMatch = unitParam.match(/^(\d+(?:\.\d+)?)/);
-  const key = keyMatch?.[1] ?? null;
-
-  if (unitMap && key && unitMap[key]) {
-    activePrice = unitMap[key].price;
-    activeDiscountPrice = unitMap[key].discountPrice;
-  }
-}
-
-    return [{
-      ...found,
-      price: activePrice,
-      discountPrice: activeDiscountPrice,
-      cartQuantity: qty ? parseInt(qty) : 1,
-    }];
-  }
-  return cartItems;
-}, [productId, products, cartItems, qty, unitParam]);
-
-
-
- const { mutate: submitOrder, isPending, error } = useCustomMutation(
+  const { mutate: submitOrder, isPending, error } = useCustomMutation(
     ["post-order"],
     postOrder,
     ["ordersByUser", user?.id],
     (newOrder) => {
       setOrderResponse(newOrder.data);
-       
+      clearCart();
+      router.replace(pathname, { scroll: false });
     }
   );
-
-
-
 
   const subTotal = checkoutItems.reduce(
     (acc, item) => acc + item.price * item.cartQuantity,
@@ -190,412 +191,291 @@ if (unitParam) {
     );
   }, 0);
 
-  const total = subTotal - totalDiscount;
+  const couponDiscount = useMemo(() => {
+    if (!appliedCoupon?.success) return 0;
+    const priceAfterItemDiscount = subTotal - totalDiscount;
 
-useEffect(() => {
-  if (!selectedPayment) return;
+    if (appliedCoupon.discountType === "percentage") {
+      return Math.round((priceAfterItemDiscount * (appliedCoupon.discountValue ?? 0)) / 100);
+    }
+    if (appliedCoupon.discountType === "flat") {
+      return Math.min(appliedCoupon.discountValue ?? 0, priceAfterItemDiscount);
+    }
+    return 0;
+  }, [appliedCoupon, subTotal, totalDiscount]);
 
-  const items = checkoutItems.map((item) => {
-    const price = item.discountPrice && item.discountPrice > 0 ? item.discountPrice : item.price;
-    const discount = item.price - price;
+  const shippingCost = checkoutItems.length > 0 ? selectedShipping.cost : 0;
 
-    return {
-      item_id: item.id,
-      item_name: item.name,
-      price,
-      discount,
-      quantity: item.cartQuantity,
-      item_brand: siteMeta?.siteName || "Online Store",
-      item_variant: item.selectedUnit && item.unitLabel
-        ? `${item.selectedUnit}${item.unitLabel}`
-        : undefined,
-      item_category:  "",
+  const total = subTotal - totalDiscount - couponDiscount + shippingCost;
+
+  useEffect(() => {
+    if (!selectedPayment) return;
+
+    const items = checkoutItems.map((item) => {
+      const price = item.discountPrice && item.discountPrice > 0 ? item.discountPrice : item.price;
+      const discount = item.price - price;
+
+      return {
+        item_id: item.id,
+        item_name: item.name,
+        price,
+        discount,
+        quantity: item.cartQuantity,
+        item_brand: siteMeta?.siteName || "Online Store",
+        item_variant: item.selectedUnit && item.unitLabel
+          ? `${item.selectedUnit}${item.unitLabel}`
+          : undefined,
+        item_category: "",
+      };
+    });
+
+    const ecommerce = {
+      currency: "BDT",
+      value: total,
+      affiliation: siteMeta?.siteName || "Online Store",
+      payment_type: selectedPayment,
+      coupon: appliedCoupon?.code,
+      shipping: shippingCost,
+      items,
     };
-  });
 
-  const ecommerce = {
-    currency: "BDT",
-    value: total,
-    affiliation: siteMeta?.siteName || "Online Store",
-    payment_type: selectedPayment,
-    items,
-  };
+    pushToDataLayer("add_payment_info", ecommerce);
+    trackEcommerceEvent("add_payment_info", ecommerce);
+  }, [selectedPayment, checkoutItems, total]);
 
-  pushToDataLayer("add_payment_info", ecommerce);
-  trackEcommerceEvent("add_payment_info", ecommerce);
-}, [selectedPayment, checkoutItems, total]);
-
-
-useEffect(() => {
-  if (!orderResponse) return;
-
+  useEffect(() => {
+    if (!orderResponse) return;
 
     const {
-    name, mobileNumber, paymentMethod, address, userAgent, userId, createdAt, ip,accountType, status, updatedAt,
-    fbc, fbp, ttclidValue, ttpCookie,
-    gclid, li_fat_id, gbraid, wbraid, dclid, uuid, msclkid, fbclid, twclid, rdt_cid, epik, ScCid, sccid, qclid, irclickid, awc,
-    orderItems
+      name, mobileNumber, paymentMethod, address, userAgent, userId, createdAt, ip, accountType, status, updatedAt,
+      fbc, fbp, ttclidValue, ttpCookie,
+      gclid, li_fat_id, gbraid, wbraid, dclid, uuid, msclkid, fbclid, twclid, rdt_cid, epik, ScCid, sccid, qclid, irclickid, awc,
+      orderItems, zilla, thana,email
+    } = orderResponse;
 
-  } = orderResponse
+    const items = orderItems.map((item) => {
+      const price = item.price;
+      const productName = products?.data?.find((p) => p.id === item.productId)?.name;
 
-  const items = orderItems.map((item) => {
-  const price = item.price 
-  const productName = products?.data?.find((p) => p.id === item.productId)?.name;
+      return {
+        item_id: item.productId,
+        item_name: productName,
+        price,
+        quantity: item.quantity,
+        item_brand: siteMeta?.siteName || "Online Store",
+        item_variant: item.variant ? item.variant : undefined,
+        item_category: "",
+      };
+    });
 
-    return {
-      item_id: item.productId,
-      item_name: productName,
-      price,
-      quantity: item.quantity,
-      item_brand: siteMeta?.siteName || "Online Store",
-      item_variant: item.variant ? item.variant 
-        : undefined,
-      item_category: "",
+    const ecommerce = {
+      order_id: orderResponse.orderId,
+      transaction_id: orderResponse.transactionId,
+      currency: "BDT",
+      value: total,
+      affiliation: siteMeta?.siteName || "Online Store",
+      shipping: shippingCost,
+      payment_type: selectedPayment,
+      payment_method: paymentMethod,
+      is_paid: orderResponse.isPaid,
+      discount_total: totalDiscount || 0,
+      coupon: appliedCoupon?.code,
+      coupon_discount: couponDiscount || 0,
+      items,
+      customer_name: name,
+      customer_mobile: mobileNumber,
+      customer_email: email,
+      customer_zilla: zilla,
+      customer_thana: thana,
+      customer_address: address,
+      customer_account_type: accountType,
+      customer_id: userId,
+      order_status: status,
+      user_agent: userAgent,
+      ip_address: ip,
+      fbc, fbp, gclid, li_fat_id, gbraid, wbraid, dclid, uuid, msclkid, fbclid, twclid, rdt_cid, epik, ScCid, sccid, qclid, irclickid, awc,
+      ttclid: ttclidValue,
+      ttp_cookie: ttpCookie,
+      created_at: createdAt,
+      updated_at: updatedAt,
     };
-  });
 
-
-
-  const ecommerce = {
-    order_id: orderResponse.orderId,
-    transaction_id: orderResponse.transactionId,
-    currency: "BDT",
-    value: total,
-    affiliation: siteMeta?.siteName || "Online Store",
-    shipping: 0,
-    payment_type: selectedPayment,
-    payment_method: paymentMethod,
-    is_paid: orderResponse.isPaid,
-    discount_total: totalDiscount || 0,
-    items,
-    customer_name: name,
-    customer_mobile: mobileNumber,
-    customer_address: address,
-    customer_account_type: accountType,
-    customer_id: userId,
-    order_status: status,
-    user_agent: userAgent,
-    ip_address: ip,
-    fbc, fbp, gclid, li_fat_id, gbraid, wbraid, dclid, uuid, msclkid, fbclid, twclid, rdt_cid, epik, ScCid, sccid, qclid, irclickid, awc,
-    ttclid: ttclidValue,
-    ttp_cookie: ttpCookie,
-    created_at: createdAt,
-    updated_at: updatedAt,
-  };
-
-  pushToDataLayer("purchase", ecommerce);
-  trackEcommerceEvent("purchase", ecommerce);
-}, [orderResponse]);
-
+    pushToDataLayer("purchase", ecommerce);
+    trackEcommerceEvent("purchase", ecommerce);
+  }, [orderResponse]);
 
   const form = useForm<ShippingForm>({
     resolver: zodResolver(shippingSchema),
     defaultValues: {
-      name: "",
+      orderFor:"self",
+      name:user?.name || "",
       mobileNumber: user?.mobileNumber || "",
       address: user?.address || "",
+      email:"",
+      zilla:"",
+      thana:"",
+      specialNote:"",
+      agreeToReturnPolicy:true
+      
     },
   });
 
   useEffect(() => {
-  if (user) {
-    form.reset({
-      name: "",
-      mobileNumber: user.mobileNumber || "",
-      address: user.address || "",
-    });
-  }
-}, [user]);
+    if (user) {
+      form.reset({
+        orderFor:"self",
+        name:user?.name || "",
+        mobileNumber: user.mobileNumber || "",
+        address: user.address || "",
+        email:"",
+        zilla:"",
+        thana:"",
+        specialNote:"",
+        agreeToReturnPolicy:true
+      });
+    }
+  }, [user]);
 
+  const handlePlaceOrder = async (data: ShippingForm) => {
+    if (!selectedPayment) return;
 
-const handlePlaceOrder = async (data: ShippingForm) => {
-  if (!selectedPayment) return;
+    const items = checkoutItems.map((item) => {
+      const price = item.discountPrice && item.discountPrice > 0 ? item.discountPrice : item.price;
+      const discount = item.price - price;
 
-  const items = checkoutItems.map((item) => {
-    const price = item.discountPrice && item.discountPrice > 0 ? item.discountPrice : item.price;
-    const discount = item.price - price;
-
-    return {
-      item_id: item.id,
-      item_name: item.name,
-      price,
-      discount,
-      quantity: item.cartQuantity,
-      item_brand: siteMeta?.siteName || "Online Store",
-      item_variant: item.selectedUnit && item.unitLabel
-        ? `${item.selectedUnit}${item.unitLabel}`
-        : undefined,
-      item_category: "",
-    };
-  });
-
-  const ecommerce = {
-    currency: "BDT",
-    value: total,
-    affiliation: siteMeta?.siteName || "Online Store",
-    items,
-  };
-
-  pushToDataLayer("add_shipping_info", ecommerce);
-  trackEcommerceEvent("add_shipping_info", ecommerce); 
-
-  const orderData = {
-    userId: user?.id,
-    fbc,
-    fbp,
-    ttpCookie,
-    ttclidValue,
-    gclid,
-    li_fat_id,
-    gbraid,
-    wbraid,
-    dclid,
-    uuid,
-    msclkid,
-    fbclid,
-    twclid,
-    rdt_cid,
-    epik,
-    ScCid,
-    sccid,
-    qclid,
-    irclickid,
-    awc,
-    name: data.name,
-    mobileNumber: data.mobileNumber,
-    address: data.address,
-    paymentMethod: selectedPayment,
-    totalDiscount,
-    total,
-    orderItems: checkoutItems.map((item) => {
-      const hasDiscount = item.discountPrice && item.discountPrice > 0 && item.discountPrice < item.price;
-      const baseProductId = item.id.includes("-") ? item.id.split("-")[0] : item.id;
-      const variant = unitParam 
-        ? unitParam 
-        : item.id.includes("-") 
-        ? item.id.split("-").slice(1).join("-") 
-        : null;
       return {
-        productId: baseProductId,
+        item_id: item.id,
+        item_name: item.name,
+        price,
+        discount,
         quantity: item.cartQuantity,
-        price: hasDiscount ? item.discountPrice! : item.price,
-        variant: variant ?? "default",
+        item_brand: siteMeta?.siteName || "Online Store",
+        item_variant: item.selectedUnit && item.unitLabel
+          ? `${item.selectedUnit}${item.unitLabel}`
+          : undefined,
+        item_category: "",
       };
-    }),
-  };
+    });
 
-  try {
-    submitOrder(orderData);
-  } catch (err) {
-    console.error("Order failed:", err);
-  }
-};
+    const ecommerce = {
+      currency: "BDT",
+      value: total,
+      affiliation: siteMeta?.siteName || "Online Store",
+      shipping: shippingCost,
+      items,
+    };
+
+    pushToDataLayer("add_shipping_info", ecommerce);
+    trackEcommerceEvent("add_shipping_info", ecommerce);
+
+    const orderData = {
+      userId: user?.id,
+      fbc,
+      fbp,
+      ttpCookie,
+      ttclidValue,
+      gclid,
+      li_fat_id,
+      gbraid,
+      wbraid,
+      dclid,
+      uuid,
+      msclkid,
+      fbclid,
+      twclid,
+      rdt_cid,
+      epik,
+      ScCid,
+      sccid,
+      qclid,
+      irclickid,
+      awc,
+      name: data.name,
+      mobileNumber: data.mobileNumber,
+      email:data.email,
+      orderFor:data.orderFor,
+      zilla: data.zilla,
+      thana: data.thana,
+      address: data.address,
+      specialNote:data.specialNote,
+      paymentMethod: selectedPayment,
+      shippingMethod: selectedShipping.id,
+      shippingCost,
+      couponCode: appliedCoupon?.code ?? null,
+      couponDiscount,
+      totalDiscount,
+      total,
+      orderItems: checkoutItems.map((item) => {
+        const hasDiscount = item.discountPrice && item.discountPrice > 0 && item.discountPrice < item.price;
+        const variant = item.selectedUnit && item.unitLabel ? `${item.selectedUnit}${item.unitLabel}` : "default";
+
+        return {
+          productId: item.id,
+          quantity: item.cartQuantity,
+          price: hasDiscount ? item.discountPrice! : item.price,
+          variant,
+        };
+      }),
+    };
+
+    try {
+      submitOrder(orderData);
+    } catch (err) {
+      console.error("Order failed:", err);
+    }
+  };
 
   if (orderResponse) return <InvoiceOrder order={orderResponse} />;
 
   return (
     <div className="space-y-6">
-      {/* Cart Items */}
       <Card className="rounded-2xl shadow-lg border border-gray-200">
         <CardHeader>
           <h3 className="text-xl font-semibold">Cart & Shipping & Payment</h3>
         </CardHeader>
         <CardContent className="p-6 space-y-6">
-          {isLoading ? (
-            <div className="space-y-3">
-              {[...Array(2)].map((_, i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <Skeleton className="w-14 h-14 rounded-md" />
-                  <div className="flex-1 space-y-2">
-                    <Skeleton className="h-4 w-1/2" />
-                    <Skeleton className="h-3 w-1/3" />
-                  </div>
-                  <Skeleton className="h-4 w-12" />
-                </div>
-              ))}
-            </div>
-          ) : checkoutItems.length === 0 ? (
-            <p className="text-gray-500">Your cart is empty.</p>
-          ) : (
-            <div className="space-y-3">
-              {checkoutItems.map((item) => {
-                const hasDiscount =
-                  item.discountPrice &&
-                  item.discountPrice > 0 &&
-                  item.discountPrice < item.price;
+          <CartItemList isLoading={isLoading} checkoutItems={checkoutItems} />
 
-                return (
-                  <div
-                    key={item.id}
-                    className="flex items-center gap-4 border-b pb-3"
-                  >
-                    <Image
-                      src={item.productImage}
-                      alt={item.name}
-                      width={64}
-                      height={64}
-                      className="rounded-md object-cover border"
-                    />
-                    <div className="flex-1">
-                      <p className="text-sm font-medium">{item.name}</p>
-                      <p className="text-xs text-gray-500">
-                        Qty: {item.cartQuantity}
-                      </p>
-{unitParam && (
-  <p className="text-xs text-gray-400">Variant: {unitParam}</p>
-)}
-                      <div className="flex items-center gap-2 mt-1">
-                        {hasDiscount ? (
-                          <>
-                            <span className="text-sm font-semibold text-green-600">
-                              BDT {item.discountPrice?.toLocaleString()}
-                            </span>
-                            <span className="text-xs line-through text-gray-400">
-                              BDT {item.price.toLocaleString()}
-                            </span>
-                          </>
-                        ) : (
-                          <span className="text-sm font-semibold">
-                            BDT {item.price.toLocaleString()}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    <p className="font-semibold text-right text-gray-800">
-                      BDT{" "}
-                      {(
-                        (hasDiscount ? item.discountPrice! : item.price) *
-                        item.cartQuantity
-                      ).toLocaleString()}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
+          {checkoutItems.length > 0 && (
+   <CouponInput
+  subTotal={subTotal - totalDiscount}
+  appliedCoupon={appliedCoupon}
+  setAppliedCoupon={setAppliedCoupon}
+  couponDiscount={couponDiscount}
+  checkoutItems={checkoutItems}   // 👈 add this
+/>
           )}
 
-          {/* Totals */}
-          <div className="space-y-1 border-t pt-3">
-            <div className="flex justify-between text-sm">
-              <span>Sub Total:</span>
-              <span>BDT {subTotal.toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between text-sm text-green-600">
-              <span>Discount:</span>
-              <span>- BDT {totalDiscount.toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between font-semibold text-lg border-t pt-2">
-              <span>Total:</span>
-              <span>BDT {total.toLocaleString()}</span>
-            </div>
-          </div>
+{checkoutItems.length > 0 && shippingMethods.length > 0 && (
+            <ShippingMethodSelector
+              shippingMethodId={shippingMethodId}
+              setShippingMethodId={setShippingMethodId}
+              shippingMethods={shippingMethods}
+            />
+          )}
 
-          {/* Shipping Form */}
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(handlePlaceOrder)}
-              className="space-y-4"
-            >
-              <h4 className="font-medium mb-3">Shipping Address</h4>
+          <OrderSummary
+            subTotal={subTotal}
+            totalDiscount={totalDiscount}
+            couponCode={appliedCoupon?.code}
+            couponDiscount={couponDiscount}
+            shippingLabel={selectedShipping.label}
+            shippingCost={shippingCost}
+            total={total}
+          />
 
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <CustomForm
-                    field={field}
-                    fieldType="input"
-                    inputType="text"
-                    label="Your Name"
-                    placeHolder="Enter your full name"
-                    important
-                  />
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="mobileNumber"
-                render={({ field }) => (
-                  <CustomForm
-                    field={field}
-                    fieldType="input"
-                    inputType="text"
-                    label="Mobile Number"
-                    placeHolder="Enter your mobile number"
-                    important
-                  />
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="address"
-                render={({ field }) => (
-                  <CustomForm
-                    field={field}
-                    fieldType="textarea"
-                    label="Address"
-                    placeHolder="Enter your address"
-                    important
-                  />
-                )}
-              />
-
-              {/* Payment Options */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                {paymentMethods.map((method) => {
-                  const isSelected = selectedPayment === method.id;
-                  return (
-                    <Card
-                      key={method.id}
-                      onClick={() => setSelectedPayment(method.id)}
-                      className={`cursor-pointer p-2 flex flex-col space-y-1.5 items-center text-center border-2 rounded-xl ${
-                        isSelected
-                          ? "border-yellow-400 ring-2 ring-yellow-200"
-                          : "border-gray-200"
-                      } ${method.gradient}`}
-                    >
-                    <div className="flex-shrink-0 w-60 h-12 relative flex items-center justify-center">
-                      <Image
-                        src={method.image}
-                        alt={method.name}
-                        width={120}
-                        height={60}
-                     
-                        className="object-contain absolute translate-y-1/5 -translate-x-1/3"
-                      />
-                    </div>
-               
-                      <h4 className={`font-semibold ${method.textColor}`}>
-                        {method.name}
-                      </h4>
-                 
-                    </Card>
-                  );
-                })}
-              </div>
-
-              <Button
-                type="submit"
-                className="w-full mt-4"
-                disabled={
-                  !selectedPayment || checkoutItems.length === 0 || isPending
-                }
-              >
-                {isPending ? (
-                  <div className="flex items-center gap-2">
-                    <Zap className="w-4 h-4 animate-spin" /> Placing Order...
-                  </div>
-                ) : (
-                  "Place Order"
-                )}
-              </Button>
-            </form>
-          </Form>
+          <ShippingPaymentForm
+            form={form}
+            selectedPayment={selectedPayment}
+            setSelectedPayment={setSelectedPayment}
+            onSubmit={handlePlaceOrder}
+            isPending={isPending}
+            disabled={checkoutItems.length === 0}
+          />
         </CardContent>
       </Card>
 
-      {error && <p className="text-red-500">{error}</p>}
+      {error && <p className="text-red-500 font-semibold">{error}</p>}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { dbAbout, dbContactInfo } from "@/types/type";
+import { dbAbout, dbContactInfo, dbPrivacy, dbReturnPolicy } from "@/types/type";
 
 export type BusinessResponse = {
   data: dbContactInfo | null;
@@ -25,6 +25,36 @@ export const getAboutInfo = async (): Promise<AboutResponse> => {
   );
 
   if (!res.ok) throw new Error("Failed to load about info");
+
+  return await res.json();
+};
+
+
+export type PrivacyPolicyResponse = {
+  data: dbPrivacy | null;
+};
+
+export const getPrivacyPolicy = async (): Promise<PrivacyPolicyResponse> => {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_ADMIN_URL || process.env.NEXT_PUBLIC_ADMIN_WWW_URL}/api/privacy-policy`
+  );
+
+  if (!res.ok) throw new Error("Failed to load privacy policy");
+
+  return await res.json();
+};
+
+
+export type ReturnPolicyResponse = {
+  data: dbReturnPolicy | null;
+};
+
+export const getReturnPolicy = async (): Promise<ReturnPolicyResponse> => {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_ADMIN_URL || process.env.NEXT_PUBLIC_ADMIN_WWW_URL}/api/return-policy`
+  );
+
+  if (!res.ok) throw new Error("Failed to load return policy");
 
   return await res.json();
 };

@@ -10,6 +10,18 @@ export type orderInput = {
   transactionId?: string | null;
   userId?: string | null;
 
+  shippingMethod?:string | null;
+  shippingCost?:number | null;
+
+  couponCode?:string | null;
+  couponDiscount?:number | null;
+
+  email?:string | null;
+  orderFor?:string | null;
+  zilla?:string | null;
+  thana?:string | null;
+  specialNote?:string | null; 
+
   fbc?:string | null;
   fbp?:string | null;
   ttpCookie?:   string | null;

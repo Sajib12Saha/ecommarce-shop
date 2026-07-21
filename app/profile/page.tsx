@@ -85,11 +85,11 @@ const handleProfile = (data: userInput) => {
     router.push("/");
   };
 
-  // ✅ Show loader while checking auth
+
   if (!loaded || !user) {
     return (
       <div className="w-full min-h-screen flex items-center justify-center">
-        <Loader2 className="size-6 animate-spin" />
+        <Loader2 className="size-6 animate-spin text-primary" />
       </div>
     );
   }

@@ -1,3 +1,5 @@
+"use client";
+
 import React, { ReactNode, useState } from "react";
 import {
   FormControl,
@@ -6,7 +8,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { GoStarFill } from "react-icons/go";
-import { Eye, EyeOff } from "lucide-react";
+import { Check, ChevronDown, ChevronsUpDown, Eye, EyeOff } from "lucide-react";
 import { Textarea } from "../ui/textarea";
 import { Input } from "../ui/input";
 import {
@@ -16,8 +18,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox"; // ✅ import checkbox
+import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "./label";
+import { cn } from "@/lib/utils";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 
 interface SelectOption {
   label: string;
@@ -28,16 +41,85 @@ interface Props {
   field: any;
   label: string;
   placeHolder?: string;
-  fieldType: "input" | "textarea" | "select" | "checkbox"; // ✅ added "checkbox"
+  fieldType: "input" | "textarea" | "select" | "checkbox";
   inputType?: "number" | "text" | "password" | "email";
   important?: boolean;
   error?: any;
   allowShowHidePassword?: boolean;
   previewImage?: string;
-  options?: SelectOption[]; // used for select
+  options?: SelectOption[];
   disable?: boolean;
-  checkBoxLabel?:ReactNode;
+  checkBoxLabel?: ReactNode;
+  searchable?: boolean;
 }
+
+interface SearchableComboboxProps {
+  value: string;
+  onChange: (val: string) => void;
+  options: SelectOption[];
+  placeHolder?: string;
+  disable?: boolean;
+}
+
+const SearchableCombobox: React.FC<SearchableComboboxProps> = ({
+  value,
+  onChange,
+  options,
+  placeHolder,
+  disable,
+}) => {
+  const [open, setOpen] = useState(false);
+  const selected = options.find((opt) => opt.value === value);
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          type="button"
+          variant="ghost"
+          role="combobox"
+          aria-expanded={open}
+          disabled={disable}
+          className={cn(
+            "w-full justify-between font-normal text-sm border border-2",
+            !selected && "text-muted-foreground"
+          )}
+        >
+          {selected ? selected.label : placeHolder || "Select an option"}
+          <ChevronDown className="ml-1 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[--radix-popover-trigger-width] p-0 z-40">
+        <Command>
+          <CommandInput placeholder={placeHolder || "Search..."} />
+          <CommandList>
+            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandGroup>
+              {options.map((opt) => (
+                <CommandItem
+                  key={opt.value}
+                  value={opt.label}
+                  onSelect={() => {
+                    onChange(opt.value);
+                    setOpen(false);
+                  }}
+                >
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      value === opt.value ? "opacity-100" : "opacity-0"
+                    )}
+                  />
+                  {opt.label}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+};
 
 export const CustomForm = ({
   field,
@@ -50,8 +132,8 @@ export const CustomForm = ({
   previewImage,
   options = [],
   disable,
-  checkBoxLabel
-
+  checkBoxLabel,
+  searchable = false,
 }: Props) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -63,19 +145,26 @@ export const CustomForm = ({
         <Textarea
           placeholder={placeHolder}
           {...field}
-          className="min-h-36"
+          className="min-h-16"
           disabled={disable}
         />
       );
       break;
 
     case "select":
-      FieldComponent = (
+      FieldComponent = searchable ? (
+        <SearchableCombobox
+          value={field.value}
+          onChange={field.onChange}
+          options={options}
+          placeHolder={placeHolder}
+          disable={disable}
+        />
+      ) : (
         <Select
           onValueChange={field.onChange}
           value={field.value}
           disabled={disable}
-
         >
           <SelectTrigger className="w-full">
             <SelectValue placeholder={placeHolder || "Select option"} />
@@ -90,21 +179,21 @@ export const CustomForm = ({
         </Select>
       );
       break;
-case "checkbox":
-  FieldComponent = (
-    <div className="flex items-center space-x-2">
-      <Checkbox
-        id={field.name}
-        checked={field.value}
-        onCheckedChange={(checked) => field.onChange(checked)}
-      />
-      <Label htmlFor={field.name} className="text-sm leading-relaxed">
-        {checkBoxLabel} 
-      </Label>
-    </div>
-  );
-  break;
 
+    case "checkbox":
+      FieldComponent = (
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id={field.name}
+            checked={field.value}
+            onCheckedChange={(checked) => field.onChange(checked)}
+          />
+          <Label htmlFor={field.name} className="text-sm leading-relaxed">
+            {checkBoxLabel}
+          </Label>
+        </div>
+      );
+      break;
 
     case "input":
     default:

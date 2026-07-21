@@ -5,16 +5,21 @@ import Link from "next/link";
 import { siteMeta } from "@/data";
 import { useBusinessInfo } from "@/hooks/use-business-info";
 import { FacebookSvg, WhatsAppSvg, MessengerSvg, BRAND_COLORS } from "@/components/social-icons";
+import { FileText, Mail, MapPin, Phone } from "lucide-react";
 
 export const  Footer = () =>  {
 
    const { data: businessInfo} = useBusinessInfo();
+
 
   const year = new Date().getFullYear();
   const quickLinks = [
     { label: "Faq", href: "/faq" },
     { label: "Privacy Policy", href: "/privacy-policy" },
     { label: "Return Policy", href: "/return-policy" },
+    { label: "About", href: "/about" },
+    { label: "Blogs", href: "/blogs" },
+    { label: "Become a Seller", href: "/become-seller" },
   ];
 
 
@@ -57,12 +62,12 @@ export const  Footer = () =>  {
   };
 
   return (
-    <footer className="bg-gray-200 border-t border-gray-100">
+    <footer className="bg-gray-50">
       <div className="py-4 lg:py-1 px-6">
   
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
   
-          <div className="relative mt-8">
+          <div className="relative mt-8 space-y-2">
             <Image
               src="/logo.svg"
               alt={siteMeta.siteName}
@@ -75,6 +80,48 @@ export const  Footer = () =>  {
               Khagrachari, bringing you authentic traditional goods while
               supporting the community.
             </p>
+
+             
+  
+      <div className="space-y-2 text-sm text-gray-700">
+        <div className="flex items-center gap-2">
+          <FileText className="h-4 w-4" />
+          <span className="font-medium">e-TIN:</span>
+          <span className="">{businessInfo?.data?.eTinNumber}</span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <FileText className="h-4 w-4 text-gray-700" />
+          <span className="font-medium">Trade License No:</span>
+          <span className="">{businessInfo?.data?.tradeLicenseNumber}</span>
+        </div>
+      </div>
+
+
+      <div>
+        <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide">
+          Join Our Community
+        </h3>
+
+          <div className="flex space-x-4  mt-2">
+            {socialLinks.map(({ id, href, bg }) => (
+                  <a
+                     key={id}
+                     href={href}
+                     target="_blank"
+                     rel="noopener noreferrer"
+                     aria-label={id}
+                     className="relative flex items-center justify-center w-8 h-8 z-50"
+                   >
+                     <span className="relative z-10 flex items-center justify-center w-full h-full rounded-full overflow-hidden">
+                       {renderGlyph(id)}
+                     </span>
+                   </a>
+            ))}
+          </div>
+      </div>
+
+  
           </div>
 
        
@@ -82,17 +129,31 @@ export const  Footer = () =>  {
             <h4 className="text-lg font-semibold text-gray-800 mb-3">
               Contact Info
             </h4>
-            <ul className="space-y-1 text-sm text-gray-700">
-              <li>
-                <span className="font-medium">Address: </span>{businessInfo?.data?.shopAddress || "Shop No:06 Sohag Complex, 2nd Floor Chengi Square, khagachari Sadar Chittagong."} 
-              </li>
-              <li>
-                <span className="font-medium">Email: </span>{businessInfo?.data?.infoEmail || "mail@hillora.com" } 
-              </li>
-              <li>
-                <span className="font-medium">Mobile: </span>{businessInfo?.data?.whatsappNumber || "+880 1519558558" }  
-              </li>
-            </ul>
+    <ul className="space-y-3 text-sm text-gray-700">
+  <li className="flex items-start gap-2">
+    <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
+    <span>
+      <span className="font-medium">Address:</span>{" "}
+      {businessInfo?.data?.shopAddress}
+    </span>
+  </li>
+
+  <li className="flex items-center gap-2">
+    <Mail className="h-4 w-4 shrink-0 " />
+    <span>
+      <span className="font-medium">Email:</span>{" "}
+      {businessInfo?.data?.infoEmail || "mail@hillora.com"}
+    </span>
+  </li>
+
+  <li className="flex items-center gap-2">
+    <Phone className="h-4 w-4 shrink-0 " />
+    <span>
+      <span className="font-medium">Mobile:</span>{" "}
+      {businessInfo?.data?.whatsappNumber || "+880 1519-558558"}
+    </span>
+  </li>
+</ul>
           </div>
 
 
@@ -137,28 +198,6 @@ export const  Footer = () =>  {
           </div>
 
           <div className="flex space-x-4 lg:space-x-8">
-            {socialLinks.map(({ id, href, bg }) => (
-                  <a
-                     key={id}
-                     href={href}
-                     target="_blank"
-                     rel="noopener noreferrer"
-                     aria-label={id}
-                     className="relative flex items-center justify-center w-8 h-8 z-50"
-                   >
-                     <span className="relative z-10 flex items-center justify-center w-full h-full rounded-full overflow-hidden">
-                       {renderGlyph(id)}
-                     </span>
-                     <div
-                       className="absolute inset-1 border-2 rounded-full animate-ping duration-200 pointer-events-none"
-                       style={{ borderColor: bg }}
-                     />
-                         <div
-                       className="absolute -inset-0.5 border-2 rounded-full animate-ping duration-100 pointer-events-none"
-                       style={{ borderColor: bg }}
-                     />
-                   </a>
-            ))}
           </div>
         </div>
       </div>

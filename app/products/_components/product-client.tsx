@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MessageSquareMore, MinusIcon, PlusIcon, Star, Volume2, VolumeX } from "lucide-react";
+import { MessageSquareMore, MinusIcon, PlusIcon, ShoppingCart, Star, Volume2, VolumeX } from "lucide-react";
 import RelatedProducts from "../_components/relatedProducts";
 import { useProducts } from "@/hooks/use-products";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -20,6 +20,7 @@ import { FaRegPlayCircle } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { trackEcommerceEvent } from "@/lib/custom-tm";
 import { hasFiredEvent, markEventFired } from "@/lib/event-dedupe";
+import { FaBagShopping } from "react-icons/fa6";
 
 interface Props {
   productUrl: string;
@@ -244,7 +245,7 @@ const cartKey = selectedKey
   ? `${product.data.id}-${variantLabel}`
   : product.data.id;
 
-const isInCart = cartItems.some((item) => item.id === cartKey);
+const isInCart = cartItems.some((item) => item.cartKey === cartKey);
 
   const isAddDisabled = product.data.inStocks <= 0 || isInCart || (hasUnits && !selectedKey);
   const isBuyDisabled = product.data.inStocks <= 0 || (hasUnits && !selectedKey);
@@ -265,7 +266,7 @@ const isInCart = cartItems.some((item) => item.id === cartKey);
         </Badge>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-12">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-10 mb-4 lg:mb-12">
         <div className="w-full">
           <div className="relative w-full h-[400px] md:h-[600px] overflow-hidden">
             {mergedMedia.map((mediaUrl, index) => {
@@ -392,36 +393,38 @@ const isInCart = cartItems.some((item) => item.id === cartKey);
                 <PlusIcon />
               </Button>
             </div>
-            <Button
-              onClick={() => handleAddToCart(product.data)}
-              disabled={isAddDisabled}
-              className="flex-1"
-            >
-              {addToCartLabel}
-            </Button>
           </div>
 
-          <motion.button
+      
+
+          <div className="grid grid-cols-2  gap-4">
+               <Button
+              onClick={() => handleAddToCart(product.data)}
+              disabled={isAddDisabled}
+              className="flex-1 h-10 font-semibold"
+            >
+               <ShoppingCart className="w-4 h-4" />
+              {addToCartLabel}
+            </Button>
+              <motion.button
             disabled={isBuyDisabled}
             onClick={() => handleBuyNow(product.data)}
-            className="w-full font-semibold h-9 p-1 bg-black rounded-md text-primary text-sm disabled:opacity-50 cursor-pointer"
+            className="w-full flex items-center justify-center font-semibold h-10 p-1 bg-black rounded-md text-primary text-sm disabled:opacity-50 cursor-pointer font-semibold"
             animate={{ scale: [1, 1.1, 1, 1.05, 1] }}
             transition={{ duration: 2.5, ease: "easeInOut", repeat: Infinity, repeatType: "loop" }}
           >
-            অর্ডার করুন, ক্যাশ অন ডেলিভারি
+             <span className="mr-2"> <FaBagShopping className="w-4 h-4"/></span> Order Now
           </motion.button>
-
-          <div className="flex flex-col lg:flex-row lg:items-center w-full gap-4">
             <motion.button
               onClick={() => window.open("https://wa.me/8801516194716?text=হ্যালো, আমি একটি পণ্য অর্ডার করতে চাই।", "_blank")}
-              className="flex items-center gap-x-2 text-sm font-semibold bg-gradient-to-bl from-green-500 to-green-800 h-9 p-1 flex-1 justify-center rounded-md cursor-pointer text-white"
+              className="flex items-center gap-x-2 text-sm font-semibold bg-gradient-to-bl from-green-500 to-green-800 h-10 p-1 flex-1 justify-center rounded-md cursor-pointer text-white"
             >
               <Image src="/icons/whatsapp.svg" alt="Whatsapp" height={25} width={25} className="object-contain" />
               Chat with WhatsApp
             </motion.button>
             <motion.button
               onClick={() => window.open("https://m.me/hillorashop?ref=order_now", "_blank")}
-              className="flex items-center gap-x-2 text-sm font-semibold bg-gradient-to-bl from-blue-600 to-pink-600 h-9 p-1 flex-1 justify-center rounded-md cursor-pointer text-white"
+              className="flex items-center gap-x-2 text-sm font-semibold bg-gradient-to-bl from-blue-600 to-pink-600 h-10 p-1 flex-1 justify-center rounded-md cursor-pointer text-white"
             >
               <Image src="/icons/messenger.svg.webp" alt="Messenger" height={25} width={25} className="object-contain" />
               Chat with Messenger

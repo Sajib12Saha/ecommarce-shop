@@ -23,108 +23,108 @@ export const Cart = () => {
   const { cartItems, removeItem, updateQuantity } = useCart();
   const { open, setOpen } = useOpenStore();
 
-useEffect(() => {
-  if (!open || cartItems.length === 0) return;
+  useEffect(() => {
+    if (!open || cartItems.length === 0) return;
 
-  const items = cartItems.map((item) => {
-    const price = item.discountPrice && item.discountPrice > 0 ? item.discountPrice : item.price;
-    const discount = item.price - price;
+    const items = cartItems.map((item) => {
+      const price = item.discountPrice && item.discountPrice > 0 ? item.discountPrice : item.price;
+      const discount = item.price - price;
 
-    return {
-      item_id: item.productId || item.id,
-      item_name: item.name,
-      price,
-      quantity: item.cartQuantity,
-      discount,
-      item_brand: siteMeta?.siteName || "Online Store",
-      item_variant: item.selectedUnit && item.unitLabel
-        ? `${item.selectedUnit}${item.unitLabel}`
-        : undefined,
-    };
-  });
-
-  const ecommerce = {
-    currency: "BDT",
-    value: items.reduce((total, i) => total + i.price * i.quantity, 0),
-    affiliation: siteMeta?.siteName || "Online Store",
-    items,
-  };
-
-  pushToDataLayer("view_cart", ecommerce);
-  trackEcommerceEvent("view_cart", ecommerce);
-}, [open, cartItems]);
-
-const remove = (id: string) => {
-  const item = cartItems.find((i) => i.id === id);
-  if (!item) return;
-
-  const price = item.discountPrice && item.discountPrice > 0 ? item.discountPrice : item.price;
-  const discount = item.price - price;
-
-  const ecommerce = {
-    currency: "BDT",
-    value: price * item.cartQuantity,
-    affiliation: siteMeta?.siteName || "Online Store",
-    items: [
-      {
-        item_id: item.productId || item.id,
+      return {
+        item_id: item.id,
         item_name: item.name,
         price,
-        discount,
         quantity: item.cartQuantity,
+        discount,
         item_brand: siteMeta?.siteName || "Online Store",
         item_variant: item.selectedUnit && item.unitLabel
           ? `${item.selectedUnit}${item.unitLabel}`
           : undefined,
-      },
-    ],
+      };
+    });
+
+    const ecommerce = {
+      currency: "BDT",
+      value: items.reduce((total, i) => total + i.price * i.quantity, 0),
+      affiliation: siteMeta?.siteName || "Online Store",
+      items,
+    };
+
+    pushToDataLayer("view_cart", ecommerce);
+    trackEcommerceEvent("view_cart", ecommerce);
+  }, [open, cartItems]);
+
+  const remove = (cartKey: string) => {
+    const item = cartItems.find((i) => i.cartKey === cartKey);
+    if (!item) return;
+
+    const price = item.discountPrice && item.discountPrice > 0 ? item.discountPrice : item.price;
+    const discount = item.price - price;
+
+    const ecommerce = {
+      currency: "BDT",
+      value: price * item.cartQuantity,
+      affiliation: siteMeta?.siteName || "Online Store",
+      items: [
+        {
+          item_id: item.id,
+          item_name: item.name,
+          price,
+          discount,
+          quantity: item.cartQuantity,
+          item_brand: siteMeta?.siteName || "Online Store",
+          item_variant: item.selectedUnit && item.unitLabel
+            ? `${item.selectedUnit}${item.unitLabel}`
+            : undefined,
+        },
+      ],
+    };
+
+    pushToDataLayer("remove_from_cart", ecommerce);
+    trackEcommerceEvent("remove_from_cart", ecommerce);
+
+    removeItem(cartKey);
+    toast.success(`${item.name} removed from cart`);
   };
-
-  pushToDataLayer("remove_from_cart", ecommerce);
-  trackEcommerceEvent("remove_from_cart", ecommerce);
-
-  removeItem(id);
-  toast.success(`${item.name} removed from cart`);
-};
 
   const totalPrice = cartItems.reduce((total, item) => {
     const price = item.discountPrice && item.discountPrice > 0 ? item.discountPrice : item.price;
     return total + price * item.cartQuantity;
   }, 0);
 
-const onCheckout = () => {
-  if (cartItems.length === 0) return;
+  const onCheckout = () => {
+    if (cartItems.length === 0) return;
 
-  const items = cartItems.map((item) => {
-    const price = item.discountPrice && item.discountPrice > 0 ? item.discountPrice : item.price;
-    const discount = item.price - price;
+    const items = cartItems.map((item) => {
+      const price = item.discountPrice && item.discountPrice > 0 ? item.discountPrice : item.price;
+      const discount = item.price - price;
 
-    return {
-      item_id: item.productId || item.id,
-      item_name: item.name,
-      price,
-      quantity: item.cartQuantity,
-      discount,
-      item_brand: siteMeta?.siteName || "Online Store",
-      item_variant: item.selectedUnit && item.unitLabel
-        ? `${item.selectedUnit}${item.unitLabel}`
-        : undefined,
+      return {
+        item_id: item.id,
+        item_name: item.name,
+        price,
+        quantity: item.cartQuantity,
+        discount,
+        item_brand: siteMeta?.siteName || "Online Store",
+        item_variant: item.selectedUnit && item.unitLabel
+          ? `${item.selectedUnit}${item.unitLabel}`
+          : undefined,
+      };
+    });
+
+    const ecommerce = {
+      currency: "BDT",
+      value: totalPrice,
+      affiliation: siteMeta?.siteName || "Online Store",
+      items,
     };
-  });
 
-  const ecommerce = {
-    currency: "BDT",
-    value: totalPrice,
-    affiliation: siteMeta?.siteName || "Online Store",
-    items,
+    pushToDataLayer("begin_checkout", ecommerce);
+    trackEcommerceEvent("begin_checkout", ecommerce);
+
+    router.push("/checkout");
+    setOpen(false);
   };
-
-  pushToDataLayer("begin_checkout", ecommerce);
-  trackEcommerceEvent("begin_checkout", ecommerce);
-
-  router.push("/checkout");
-  setOpen(false);
-};
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -139,10 +139,10 @@ const onCheckout = () => {
               const price = item.discountPrice && item.discountPrice > 0 ? item.discountPrice : item.price;
               return (
                 <div
-                  key={item.id}
+                  key={item.cartKey}
                   className="flex items-center justify-between border-b pb-4 px-2 last:border-0"
                 >
-                 
+
                   <Image
                     src={item.productImage}
                     alt={item.name}
@@ -151,15 +151,14 @@ const onCheckout = () => {
                     className="rounded-md object-cover"
                   />
 
-                  {/* Product Info */}
                   <div className="flex flex-col flex-1 mx-4">
                     <p className="text-sm font-medium ">{item.name}</p>
 
-                      {item.selectedUnit && item.unitLabel && (
-    <span className="text-xs text-gray-600 font-medium mt-0.5">
-      {item.selectedUnit} {item.unitLabel}
-    </span>
-  )}
+                    {item.selectedUnit && item.unitLabel && (
+                      <span className="text-xs text-gray-600 font-medium mt-0.5">
+                        {item.selectedUnit} {item.unitLabel}
+                      </span>
+                    )}
 
                     <p className="text-sm text-gray-600">
                       {item.discountPrice && item.discountPrice > 0 ? (
@@ -180,11 +179,10 @@ const onCheckout = () => {
                       </span>
                     </p>
 
-                    {/* Quantity Controls */}
                     <div className="flex items-center gap-3 mt-2">
                       <Button
                         onClick={() =>
-                          updateQuantity(item.id, Math.max(item.cartQuantity - 1, 1))
+                          updateQuantity(item.cartKey, Math.max(item.cartQuantity - 1, 1))
                         }
                         variant="outline"
                         size="icon"
@@ -195,7 +193,7 @@ const onCheckout = () => {
                       <p className="text-sm font-medium">{item.cartQuantity}</p>
                       <Button
                         onClick={() =>
-                          updateQuantity(item.id, item.cartQuantity + 1)
+                          updateQuantity(item.cartKey, item.cartQuantity + 1)
                         }
                         variant="outline"
                         size="icon"
@@ -206,11 +204,10 @@ const onCheckout = () => {
                     </div>
                   </div>
 
-                  {/* Remove Button */}
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => remove(item.id)}
+                    onClick={() => remove(item.cartKey)}
                     className="text-muted-foreground hover:text-red-600"
                   >
                     <Trash2 className="h-5 w-5" />
@@ -220,7 +217,6 @@ const onCheckout = () => {
             })}
           </div>
 
-          {/* Footer */}
           <SheetFooter className="border-t pt-4">
             <div className="flex justify-between items-center w-full mb-4">
               <p className="text-base font-semibold">Total</p>

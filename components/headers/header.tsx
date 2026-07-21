@@ -10,13 +10,7 @@ import { dbProduct } from "@/types/type";
 import { Card } from "@/components/ui/card";
 import {siteMeta } from "@/data";
 import { AnimatePresence, motion } from "framer-motion";
-import { useBusinessInfo } from "@/hooks/use-business-info";
-import {
-  WhatsAppSvg,
-  MessengerSvg,
-  BRAND_COLORS,
-  FacebookSvg,
-} from "@/components/social-icons";
+
 
 
 export function Header() {
@@ -27,7 +21,6 @@ export function Header() {
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
 
-   const { data: businessInfo} = useBusinessInfo();
 
   useEffect(() => {
     const handleScroll = () => setShowHeader(window.scrollY === 0);
@@ -46,37 +39,6 @@ export function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const socialLinks = [
-    {
-      id: "facebook",
-      href: `https://www.facebook.com/${businessInfo?.data?.messengerUsername}`,
-      bg: BRAND_COLORS.facebook,
-    },
-    {
-      id: "whatsapp",
-      href: `https://wa.me/+88${businessInfo?.data?.whatsappNumber}?text=${encodeURIComponent("হ্যালো, আমি একটি পণ্য অর্ডার করতে চাই।")}`,
-      bg: BRAND_COLORS.whatsapp,
-    },
-    {
-      id: "messenger",
-      href: `https://m.me/${businessInfo?.data?.messengerUsername}?ref=order_now`,
-      bg: BRAND_COLORS.messenger,
-    },
-  ];
-
-  const renderGlyph = (id: string) => {
-    switch (id) {
-      case "facebook":
-        return <FacebookSvg size={32} />;
-      case "whatsapp":
-        return <WhatsAppSvg size={32} />;
-      case "messenger":
-        return <MessengerSvg size={32} />;
-      default:
-        return null;
-    }
-  };
-
 
 
   return (
@@ -90,10 +52,9 @@ export function Header() {
           className="fixed top-0 left-0 right-0 z-50 hidden lg:block bg-white shadow-sm overflow-hidden"
         >
        
-          <div className="max-w-[120rem] mx-auto border-b">
+          <div className="max-w-7xl mx-auto border-b">
             <div className="backdrop-blur-lg px-8">
           <div className="flex items-center justify-between h-16 gap-8 relative">
-
 
 <div className="flex-shrink-0 w-60 h-56 relative">
   <Image
@@ -187,33 +148,6 @@ export function Header() {
           })}
         </div>
       )}
-    </div>
-  </div>
-
-  <div className="flex flex-col items-end gap-1 max-w-md">
-    <div className="flex items-center gap-8">
-      {socialLinks.map(({ id, href, bg }) => (
-        <a
-          key={id}
-          href={href}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={id}
-          className="relative flex items-center justify-center w-8 h-8 z-50"
-        >
-          <span className="relative z-10 flex items-center justify-center w-full h-full rounded-full overflow-hidden">
-            {renderGlyph(id)}
-          </span>
-          <div
-            className="absolute inset-1 border-2 rounded-full animate-ping duration-200 pointer-events-none"
-            style={{ borderColor: bg }}
-          />
-              <div
-            className="absolute -inset-0.5 border-2 rounded-full animate-ping duration-100 pointer-events-none"
-            style={{ borderColor: bg }}
-          />
-        </a>
-      ))}
     </div>
   </div>
 </div>

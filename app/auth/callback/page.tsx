@@ -41,7 +41,7 @@ function AuthCallbackContent() {
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center gap-4">
-      <Loader2 className="h-8 w-8 animate-spin" />
+      <Loader2 className="size-6 animate-spin text-primary" />
       {loading && <p className="text-gray-500">Logging you in...</p>}
     </div>
   );
@@ -52,7 +52,7 @@ export default function AuthCallbackPage() {
     <Suspense
       fallback={
         <div className="h-screen w-full flex items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin " />
+          <Loader2 className="size-6 animate-spin text-primary" />
         </div>
       }
     >

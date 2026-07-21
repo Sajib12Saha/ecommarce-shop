@@ -1,3 +1,42 @@
+export type dbCouponCategory = {
+  id: string;
+  categoryId: string;
+  category: {
+    id: string;
+    name: string;
+  };
+};
+
+export type dbCouponCode = {
+  id: string;
+  couponCode: string;
+  discountPercentage: number;
+  startDate: Date;
+  expiryDate: Date;
+  status: string;
+  categories: dbCouponCategory[];
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+
+export interface dbPrivacy {
+  id: string;
+  privacyContent : string;
+  metaTitle?: string | null;
+  metaDescription?: string | null;
+  metaKeyWords: string[];
+}
+
+export interface dbReturnPolicy {
+  id: string;
+  returnContent: string;
+  metaTitle?: string | null;
+  metaDescription?: string | null;
+  metaKeyWords: string[];
+}
+
+
 export interface dbAbout {
   id: string;
   aboutContent: string;
@@ -93,6 +132,18 @@ export type dbOrder = {
   accountType: string;
   status: "PENDING" | "PROCESSING" | "SHIPPED" | "NEARBY" | "COMPLETED" | "CANCELLED" | "RETURNED" | "CONFIRM";
   total: number;
+  orderFor?:string | null;
+  email?:string | null;
+  zilla?:string | null;
+  thana?:string | null;
+
+  shippingMethod?:string | null;
+  shippingCost?:number | null;
+
+  couponCode?:string | null;
+  couponDiscount?:number | null;
+
+  specialNote?:string | null; 
   totalDiscount?: number | null;
   transactionId?: string | null;
   userId?: string | null;
@@ -144,4 +195,14 @@ export interface dbContactInfo {
   whatsappNumber?: string | null
   infoEmail?: string | null
   shopAddress?: string | null
+  tradeLicenseNumber?: string | null
+  eTinNumber?: string | null
+}
+
+
+export interface dbDeliveryCharge {
+  id:string         
+  insideDhaka : number 
+  outsideDhaka: number
+  postOffice:number 
 }

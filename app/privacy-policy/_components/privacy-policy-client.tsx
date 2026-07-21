@@ -2,18 +2,18 @@
 
 import { Loader2 } from "lucide-react";
 import { HeadingTitle } from "@/components/heading-title";
-import { getAboutInfo } from "@/actions/business-info";
 import { useCustomQuery } from "@/hooks/use-custom-query";
+import { getPrivacyPolicy } from "@/actions/business-info";
 import { NoContentIcon } from "@/components/no-content-icon";
 
-export const AboutClient = () => {
+export const PrivacyPolicyClient = () => {
   const { data, isLoading, error } = useCustomQuery<{ data: any }>(
-    ["get-about"],
-    () => getAboutInfo()
+    ["get-privacy-policy"],
+    () => getPrivacyPolicy()
   );
 
-  const aboutData = data?.data;
-  const aboutContent = aboutData?.aboutContent || "";
+  const policyData = data?.data;
+  const privacyPolicyContent = policyData?.privacyPolicyContent || "";
 
   if (isLoading) {
     return (
@@ -26,11 +26,11 @@ export const AboutClient = () => {
   if (error) {
     return (
       <main className="mx-auto max-w-7xl w-full px-6 py-8 space-y-4 min-h-[60vh]">
-        <HeadingTitle title="About Hillora" />
+        <HeadingTitle title="Privacy Policy" />
         <div className="flex flex-col items-center justify-center py-12 text-center shadow-md rounded-xl p-4">
           <NoContentIcon size={180} primaryColor="#DC2626" />
           <p className="text-red-500 font-semibold">
-            Failed to load about content. Please try again later.
+            Failed to load privacy policy. Please try again later.
           </p>
         </div>
       </main>
@@ -39,19 +39,19 @@ export const AboutClient = () => {
 
   return (
     <main className="mx-auto max-w-5xl w-full px-6 py-8 space-y-4 min-h-[60vh]">
-      <HeadingTitle title="About Hillora" />
-      {aboutContent ? (
+      <HeadingTitle title="Privacy Policy" />
+      {privacyPolicyContent ? (
         <div className="shadow-md rounded-xl p-4">
           <div
             className="tiptap"
-            dangerouslySetInnerHTML={{ __html: aboutContent }}
+            dangerouslySetInnerHTML={{ __html: privacyPolicyContent }}
           />
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center py-12 text-center shadow-md rounded-xl p-4">
           <NoContentIcon size={180} primaryColor="#EAB308" />
           <p className="mt-4 font-semibold">
-            No about content available at the moment. Please check back later.
+            No privacy policy content available at the moment. Please check back later.
           </p>
         </div>
       )}

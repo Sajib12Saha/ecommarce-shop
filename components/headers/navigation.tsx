@@ -39,7 +39,7 @@ export function Navigation() {
       transition={{ duration: 0.4, ease: "easeInOut" }}
   className="fixed top-[110px] left-0 right-0 z-40 backdrop-blur-lg border-b shadow-sm hidden lg:block"
 >
-      <div className="px-4 sm:px-6 lg:px-8 py-2 max-w-[120rem] mx-auto">
+      <div className="px-4 sm:px-6 lg:px-8 py-2 max-w-7xl mx-auto">
         <div className="flex items-center justify-between">
 
     <Link href={'/categories'} className="flex gap-x-2  items-center text-gray-600 font-semibold hover:underline text-base cursor-pointer uppercase">

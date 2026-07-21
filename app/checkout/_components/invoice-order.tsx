@@ -15,6 +15,17 @@ interface Props {
   hideButton?: boolean;
 }
 
+const SHIPPING_METHOD_LABELS: Record<string, string> = {
+  insideDhaka: "Inside Dhaka",
+  outsideDhaka: "Outside Dhaka",
+  postOffice: "Post Office",
+};
+
+const getShippingMethodLabel = (method?: string | null) => {
+  if (!method) return "";
+  return SHIPPING_METHOD_LABELS[method] ?? method;
+};
+
 export const InvoiceOrder = ({ order, hideButton = false }: Props) => {
   const invoiceRef = useRef<HTMLDivElement>(null);
   const { data: products } = useProducts();
@@ -192,7 +203,18 @@ export const InvoiceOrder = ({ order, hideButton = false }: Props) => {
             </h4>
             <p style={{ fontWeight: "bold" }}>{order.name}</p>
             <p>{order.mobileNumber}</p>
+            {order.email && <p>{order.email}</p>}
             <p>{order.address}</p>
+            <p>
+              {order.thana}
+              {order.thana && order.zilla ? ", " : ""}
+              {order.zilla}
+            </p>
+            {order.orderFor && (
+              <p>
+                Order For: <strong>{order.orderFor}</strong>
+              </p>
+            )}
           </div>
           <div>
             <h4 style={{ fontWeight: "bold", marginBottom: "6px" }}>
@@ -218,8 +240,23 @@ export const InvoiceOrder = ({ order, hideButton = false }: Props) => {
                 {order.isPaid ? "PAID" : "UNPAID"}
               </span>
             </p>
+            {order.shippingMethod && (
+              <p>
+                Shipping Method:{" "}
+                <strong>{getShippingMethodLabel(order.shippingMethod)}</strong>
+              </p>
+            )}
           </div>
         </div>
+
+        {order.specialNote && (
+          <div style={{ marginBottom: "24px" }}>
+            <h4 style={{ fontWeight: "bold", marginBottom: "6px" }}>
+              Special Note
+            </h4>
+            <p>{order.specialNote}</p>
+          </div>
+        )}
 
         {/* Order Items */}
         <h4 style={{ fontWeight: "bold", marginBottom: "12px" }}>
@@ -301,10 +338,28 @@ export const InvoiceOrder = ({ order, hideButton = false }: Props) => {
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
           <div style={{ width: "30%" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <span>Discount:</span>
+              <span>Total Discount:</span>
               <span style={{ color: "#16a34a" }}>
                 BDT -{order.totalDiscount?.toLocaleString() || 0}
               </span>
+            </div>
+            {order.couponCode && (
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <span>Coupon ({order.couponCode}):</span>
+                <span style={{ color: "#16a34a" }}>
+                  BDT -{order.couponDiscount?.toLocaleString() || 0}
+                </span>
+              </div>
+            )}
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span>
+                Shipping
+                {order.shippingMethod
+                  ? ` (${getShippingMethodLabel(order.shippingMethod)})`
+                  : ""}
+                :
+              </span>
+              <span>BDT {order.shippingCost?.toLocaleString() || 0}</span>
             </div>
             <hr />
             <div

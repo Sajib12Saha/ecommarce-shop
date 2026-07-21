@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 
 
 
-
 export function useBusinessInfo() {
   return useQuery<BusinessResponse, Error>({
     queryKey: ["business-info"], 

@@ -2,18 +2,19 @@
 
 import { Loader2 } from "lucide-react";
 import { HeadingTitle } from "@/components/heading-title";
-import { getAboutInfo } from "@/actions/business-info";
+
 import { useCustomQuery } from "@/hooks/use-custom-query";
+import { getReturnPolicy } from "@/actions/business-info";
 import { NoContentIcon } from "@/components/no-content-icon";
 
-export const AboutClient = () => {
+export const ReturnPolicyClient = () => {
   const { data, isLoading, error } = useCustomQuery<{ data: any }>(
-    ["get-about"],
-    () => getAboutInfo()
+    ["get-return-policy"],
+    () => getReturnPolicy()
   );
 
-  const aboutData = data?.data;
-  const aboutContent = aboutData?.aboutContent || "";
+  const policyData = data?.data;
+  const returnPolicyContent = policyData?.returnPolicyContent || "";
 
   if (isLoading) {
     return (
@@ -26,32 +27,31 @@ export const AboutClient = () => {
   if (error) {
     return (
       <main className="mx-auto max-w-7xl w-full px-6 py-8 space-y-4 min-h-[60vh]">
-        <HeadingTitle title="About Hillora" />
+        <HeadingTitle title="Return Policy" />
         <div className="flex flex-col items-center justify-center py-12 text-center shadow-md rounded-xl p-4">
-          <NoContentIcon size={180} primaryColor="#DC2626" />
-          <p className="text-red-500 font-semibold">
-            Failed to load about content. Please try again later.
-          </p>
+      <NoContentIcon size={180} primaryColor="#DC2626"/>
+      <p className="text-red-500 font-semibold">Failed to load return policy. Please try again later.</p>
         </div>
+      
       </main>
     );
   }
 
   return (
     <main className="mx-auto max-w-5xl w-full px-6 py-8 space-y-4 min-h-[60vh]">
-      <HeadingTitle title="About Hillora" />
-      {aboutContent ? (
+      <HeadingTitle title="Return Policy" />
+      {returnPolicyContent ? (
         <div className="shadow-md rounded-xl p-4">
           <div
             className="tiptap"
-            dangerouslySetInnerHTML={{ __html: aboutContent }}
+            dangerouslySetInnerHTML={{ __html: returnPolicyContent }}
           />
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center py-12 text-center shadow-md rounded-xl p-4">
-          <NoContentIcon size={180} primaryColor="#EAB308" />
+          <NoContentIcon size={180} primaryColor="#EAB308"/>
           <p className="mt-4 font-semibold">
-            No about content available at the moment. Please check back later.
+            No return policy content available at the moment. Please check back later.
           </p>
         </div>
       )}

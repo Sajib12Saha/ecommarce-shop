@@ -13,7 +13,7 @@ export default function AuthPage() {
   const { user, loaded } = useUser();
   const [redirecting, setRedirecting] = useState(false);
 
-  // ✅ Redirect when user is already logged in
+
   useEffect(() => {
     if (loaded && user) {
       setRedirecting(true);
@@ -21,16 +21,16 @@ export default function AuthPage() {
     }
   }, [loaded, user, router]);
 
-  // ✅ Show loader while auth state is loading OR redirecting
+
   if (!loaded || redirecting) {
     return (
       <div className="min-h-screen w-full flex items-center justify-center">
-        <Loader2 className="size-6 animate-spin" />
+        <Loader2 className="size-6 animate-spin text-primary" />
       </div>
     );
   }
 
-  // ✅ If no user, show login form
+
   return (
     <div className="p-2 lg:p-4 flex items-center justify-center w-full">
       <Card className="border-none shadow-lg w-full max-w-5xl">

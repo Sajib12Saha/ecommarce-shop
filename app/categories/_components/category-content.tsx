@@ -52,7 +52,7 @@ export const CategoryContent = ({ initialPage }: Props) => {
               <ArrowLeft className="size-4"/>
             </Link>
 
-            <span className="text-sm font-semibold text-muted-foreground">
+            <span className="text-sm font-medium text-muted-foreground">
               Page {currentPage} of {categories.totalPages}
             </span>
 

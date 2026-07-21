@@ -84,7 +84,7 @@ const variantLabel = hasUnits && selectedKey
   : "default";
 
 const cartKey = selectedKey ? `${id}-${variantLabel}` : id;
-const isInCart = cartItems.some((item) => item.id === cartKey);
+const isInCart = cartItems.some((item) => item.cartKey === cartKey);
 
   return (
     <Card className="relative shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-none py-0">

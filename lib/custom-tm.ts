@@ -93,10 +93,7 @@ export const emitEvent = (eventName: string, payload?: EventPayload): void => {
     }
   };
 
-    console.log(`[emitEvent] "${eventName}"`, {
-    event: eventName,
-    ...enrichedPayload,
-  });
+
 
   socket.emit("event", {
     event: eventName,
