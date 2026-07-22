@@ -3,7 +3,13 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2, Tag, X } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Loader2, Tag, X, CheckCircle2 } from "lucide-react";
 import { useCouponCodes } from "@/hooks/use-coupon-codes";
 import { CartItem } from "@/hooks/use-store";
 
@@ -24,7 +30,6 @@ interface CouponInputProps {
 }
 
 export const CouponInput: React.FC<CouponInputProps> = ({
-  subTotal,
   appliedCoupon,
   setAppliedCoupon,
   couponDiscount,
@@ -34,8 +39,6 @@ export const CouponInput: React.FC<CouponInputProps> = ({
   const [couponError, setCouponError] = useState<string | null>(null);
   const { data: couponRes, isLoading: isLoadingCoupons } = useCouponCodes();
 
-    console.log(couponRes?.data)
-
   const handleApplyCoupon = () => {
     const code = couponCode.trim();
     if (!code) return;
@@ -43,7 +46,7 @@ export const CouponInput: React.FC<CouponInputProps> = ({
     setCouponError(null);
 
     const allCoupons = couponRes?.data ?? [];
-  
+
     const match = allCoupons.find(
       (c) => c.couponCode.toLowerCase() === code.toLowerCase()
     );
@@ -63,7 +66,6 @@ export const CouponInput: React.FC<CouponInputProps> = ({
       );
       return;
     }
-
 
     const categoryIds = match.categories.map((c) => c.categoryId);
     const appliesToAllCategories = categoryIds.length === 0;
@@ -93,53 +95,73 @@ export const CouponInput: React.FC<CouponInputProps> = ({
   };
 
   return (
-    <div className="border-t pt-4">
-      <label className="text-sm font-medium mb-2 flex items-center gap-1.5">
-        <Tag className="w-4 h-4" /> Coupon Code
-      </label>
-
-      {appliedCoupon?.success ? (
-        <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg px-3 py-2">
-          <div>
-            <p className="text-sm font-medium text-green-700">
-              {appliedCoupon.code} applied
-            </p>
-            <p className="text-xs text-green-600">
-              You saved BDT {couponDiscount.toLocaleString()}
-            </p>
+    <Accordion
+      type="single"
+      collapsible
+      defaultValue={appliedCoupon?.success ? "coupon" : undefined}
+      className="rounded-xl border shadow-sm"
+    >
+      <AccordionItem value="coupon" className="border-none">
+        <AccordionTrigger className="px-4 py-3 hover:no-underline">
+          <div className="flex items-center gap-2">
+      <span className="text-sm font-medium">Have Any Coupon or Gift voucher?</span>
+            {appliedCoupon?.success && (
+              <CheckCircle2 className="size-4 text-green-600" />
+            )}
           </div>
-          <button
-            type="button"
-            onClick={handleRemoveCoupon}
-            className="text-gray-500 hover:text-red-500"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-      ) : (
-        <div className="flex gap-2">
-          <Input
-            value={couponCode}
-            onChange={(e) => {
-              setCouponCode(e.target.value);
-              if (couponError) setCouponError(null);
-            }}
-            onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
-            placeholder="Enter coupon code"
-            disabled={isLoadingCoupons}
-            className="flex-1"
-          />
-          <Button
-            type="button"
-            onClick={handleApplyCoupon}
-            disabled={!couponCode.trim() || isLoadingCoupons}
-          >
-            {isLoadingCoupons ? <Loader2 className="size-4 animate-spin" /> : "Apply"}
-          </Button>
-        </div>
-      )}
+        </AccordionTrigger>
 
-      {couponError && <p className="text-xs text-red-500 mt-1.5">{couponError}</p>}
-    </div>
+        <AccordionContent className="px-4 py-4">
+          {appliedCoupon?.success ? (
+            <div className="flex items-center justify-between rounded-lg border border-green-200 bg-green-50 px-3 py-2">
+              <div>
+                <p className="text-sm font-medium text-green-700">
+                  {appliedCoupon.code} applied
+                </p>
+                <p className="text-xs text-green-600">
+                  You saved BDT {couponDiscount.toLocaleString()}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleRemoveCoupon}
+                className="text-muted-foreground hover:text-red-500"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <Input
+                value={couponCode}
+                onChange={(e) => {
+                  setCouponCode(e.target.value);
+                  if (couponError) setCouponError(null);
+                }}
+                onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
+                placeholder="Enter coupon code"
+                disabled={isLoadingCoupons}
+                className="flex-1"
+              />
+              <Button
+                type="button"
+                onClick={handleApplyCoupon}
+                disabled={!couponCode.trim() || isLoadingCoupons}
+              >
+                {isLoadingCoupons ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  "Apply"
+                )}
+              </Button>
+            </div>
+          )}
+
+          {couponError && (
+            <p className="mt-1.5 text-xs text-red-500">{couponError}</p>
+          )}
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
   );
 };

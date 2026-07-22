@@ -11,6 +11,7 @@ export interface ShippingMethod {
   id: string;
   label: string;
   cost: number;
+  disabled?: boolean; // 👈 add this
 }
 
 interface ShippingMethodSelectorProps {
@@ -27,7 +28,7 @@ export function ShippingMethodSelector({
   if (shippingMethods.length === 0) return null;
 
   return (
-    <div className="border-t pt-4">
+    <div className="shadow-lg border p-4 rounded-xl">
       <Label className="mb-3 block text-sm font-medium">
         Shipping Method
       </Label>
@@ -42,23 +43,31 @@ export function ShippingMethodSelector({
             key={method.id}
             htmlFor={method.id}
             className={cn(
-              "flex cursor-pointer items-center justify-between rounded-md border p-2 transition-all",
-              shippingMethodId === method.id
+              "flex items-center justify-between rounded-md border p-2 transition-all text-xs font-semibold",
+              method.disabled
+                ? "cursor-not-allowed opacity-50 border-border"
+                : "cursor-pointer",
+              !method.disabled && shippingMethodId === method.id
                 ? "border-primary bg-primary/5"
-                : "border-border hover:border-primary/50"
+                : "",
+              !method.disabled && shippingMethodId !== method.id
+                ? "border-border hover:border-primary/50"
+                : ""
             )}
           >
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1">
               <RadioGroupItem
                 id={method.id}
                 value={method.id}
+                disabled={method.disabled}
               />
-              <span className="text-sm font-medium">
+              <span className="">
                 {method.label}
+            
               </span>
             </div>
 
-            <span className="text-sm font-semibold">
+            <span className="">
               BDT {method.cost.toLocaleString()}
             </span>
           </Label>

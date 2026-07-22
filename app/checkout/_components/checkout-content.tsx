@@ -44,20 +44,21 @@ export const CheckoutContent = () => {
   const { data: deliveryChargeRes } = useDeliveryCharges();
   const charges = deliveryChargeRes?.data;
 
-  const shippingMethods: ShippingMethod[] = useMemo(() => {
+const shippingMethods: ShippingMethod[] = useMemo(() => {
     if (!charges) return [];
     return [
       { id: "insideDhaka", label: "Inside Dhaka", cost: charges.insideDhaka ?? 0 },
       { id: "outsideDhaka", label: "Outside Dhaka", cost: charges.outsideDhaka ?? 0 },
-      { id: "postOffice", label: "Post Office", cost: charges.postOffice ?? 0 },
+      { id: "postOffice", label: "Post Office", cost: charges.postOffice ?? 0, disabled: true }, // 👈
     ];
   }, [charges]);
 
   const [shippingMethodId, setShippingMethodId] = useState<string>("");
 
-  useEffect(() => {
+useEffect(() => {
     if (shippingMethods.length > 0 && !shippingMethodId) {
-      setShippingMethodId(shippingMethods[0].id);
+      const firstEnabled = shippingMethods.find((m) => !m.disabled);
+      if (firstEnabled) setShippingMethodId(firstEnabled.id);
     }
   }, [shippingMethods, shippingMethodId]);
 
@@ -429,31 +430,29 @@ export const CheckoutContent = () => {
 
   return (
     <div className="space-y-6">
-      <Card className="rounded-2xl shadow-lg border border-gray-200">
-        <CardHeader>
+      <div className="space-y-4">
           <h3 className="text-xl font-semibold">Cart & Shipping & Payment</h3>
-        </CardHeader>
-        <CardContent className="p-6 space-y-6">
-          <CartItemList isLoading={isLoading} checkoutItems={checkoutItems} />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+<div className="space-y-4">
+     <CartItemList isLoading={isLoading} checkoutItems={checkoutItems} />
 
-          {checkoutItems.length > 0 && (
-   <CouponInput
-  subTotal={subTotal - totalDiscount}
-  appliedCoupon={appliedCoupon}
-  setAppliedCoupon={setAppliedCoupon}
-  couponDiscount={couponDiscount}
-  checkoutItems={checkoutItems}   // 👈 add this
-/>
-          )}
 
-{checkoutItems.length > 0 && shippingMethods.length > 0 && (
+{checkoutItems.length > 0  && (
             <ShippingMethodSelector
               shippingMethodId={shippingMethodId}
               setShippingMethodId={setShippingMethodId}
               shippingMethods={shippingMethods}
             />
           )}
-
+          {checkoutItems.length > 0 && (
+   <CouponInput
+  subTotal={subTotal - totalDiscount}
+  appliedCoupon={appliedCoupon}
+  setAppliedCoupon={setAppliedCoupon}
+  couponDiscount={couponDiscount}
+  checkoutItems={checkoutItems}   
+/>
+          )}
           <OrderSummary
             subTotal={subTotal}
             totalDiscount={totalDiscount}
@@ -463,8 +462,9 @@ export const CheckoutContent = () => {
             shippingCost={shippingCost}
             total={total}
           />
-
-          <ShippingPaymentForm
+</div>
+<div>
+        <ShippingPaymentForm
             form={form}
             selectedPayment={selectedPayment}
             setSelectedPayment={setSelectedPayment}
@@ -472,8 +472,10 @@ export const CheckoutContent = () => {
             isPending={isPending}
             disabled={checkoutItems.length === 0}
           />
-        </CardContent>
-      </Card>
+</div>
+          </div>
+    
+      </div>
 
       {error && <p className="text-red-500 font-semibold">{error}</p>}
     </div>

@@ -70,7 +70,7 @@ const orderForOptions = [
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 shadow-lg border p-4 rounded-xl">
         <h4 className="font-medium mb-3">Shipping Address</h4>
 
 <div className="grid grid-cols-1 sm:grid-cols-2">

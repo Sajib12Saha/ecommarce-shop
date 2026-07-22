@@ -32,7 +32,8 @@ export const CartItemList: React.FC<CartItemListProps> = ({ isLoading, checkoutI
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 shadow-lg border p-4 rounded-xl">
+          <h4 className="font-medium mb-3">Order Items</h4>
       {checkoutItems.map((item) => {
         const hasDiscount =
           item.discountPrice && item.discountPrice > 0 && item.discountPrice < item.price;
@@ -48,21 +49,21 @@ export const CartItemList: React.FC<CartItemListProps> = ({ isLoading, checkoutI
             />
             <div className="flex-1">
               <p className="text-sm font-medium">{item.name}</p>
-              <p className="text-xs">Qty: {item.cartQuantity}</p>
               {item.selectedUnit && item.unitLabel && (
-                <p className="text-xs">
+                <p className="text-sm">
                   {item.selectedUnit}
                   {item.unitLabel}
                 </p>
               )}
-              <div className="flex items-center gap-2 mt-1">
-                {hasDiscount ? (
+              <div className="flex items-center justify-between  mt-1">
+                <p className="flex items-center gap-x-2 text-center">
+                    {hasDiscount ? (
                   <>
-                    <span className="text-sm font-semibold text-green-600">
-                      BDT {item.discountPrice?.toLocaleString()}
-                    </span>
                     <span className="text-xs line-through text-gray-400">
                       BDT {item.price.toLocaleString()}
+                    </span>
+                           <span className="text-sm font-semibold text-green-600">
+                      BDT {item.discountPrice?.toLocaleString()}
                     </span>
                   </>
                 ) : (
@@ -70,13 +71,16 @@ export const CartItemList: React.FC<CartItemListProps> = ({ isLoading, checkoutI
                     BDT {item.price.toLocaleString()}
                   </span>
                 )}
-              </div>
-            </div>
-
-            <p className="font-semibold text-right text-gray-800">
+                <span>x </span><span className="text-sm">{item.cartQuantity}</span>
+                  
+                </p>
+                 <p className="font-semibold text-sm text-right text-gray-800">
               BDT{" "}
               {((hasDiscount ? item.discountPrice! : item.price) * item.cartQuantity).toLocaleString()}
             </p>
+              </div>
+            </div>
+
           </div>
         );
       })}
