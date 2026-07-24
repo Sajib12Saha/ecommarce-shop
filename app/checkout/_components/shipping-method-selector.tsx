@@ -36,15 +36,12 @@ export function ShippingMethodSelector({
       <RadioGroup
         value={shippingMethodId}
         onValueChange={setShippingMethodId}
-        className="grid grid-cols-1 gap-3 sm:grid-cols-3"
+        className="grid grid-cols-1 gap-3 xl:grid-cols-3"
       >
         {shippingMethods.map((method) => (
-          <Label
-            key={method.id}
-            htmlFor={method.id}
-            className={cn(
-              "flex items-center justify-between rounded-md border p-2 transition-all text-xs font-semibold",
-              method.disabled
+          <div className={cn(
+            "flex flex-col space-y-2 rounded-md border p-2 transition-all",
+    method.disabled
                 ? "cursor-not-allowed opacity-50 border-border"
                 : "cursor-pointer",
               !method.disabled && shippingMethodId === method.id
@@ -53,6 +50,12 @@ export function ShippingMethodSelector({
               !method.disabled && shippingMethodId !== method.id
                 ? "border-border hover:border-primary/50"
                 : ""
+            )} 
+            key={method.id}>
+             <Label
+            htmlFor={method.id}
+            className={cn(
+              "flex items-center justify-between  text-xs font-semibold"
             )}
           >
             <div className="flex items-center gap-1">
@@ -71,6 +74,12 @@ export function ShippingMethodSelector({
               BDT {method.cost.toLocaleString()}
             </span>
           </Label>
+          <p className="text-[10px] ml-4 text-muted-foreground">
+  খাগড়াছড়ি থেকে যাবে, তাই!
+          </p>
+          
+          </div>
+         
         ))}
       </RadioGroup>
     </div>
