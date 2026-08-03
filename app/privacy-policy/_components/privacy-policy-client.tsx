@@ -13,7 +13,7 @@ export const PrivacyPolicyClient = () => {
   );
 
   const policyData = data?.data;
-  const privacyPolicyContent = policyData?.privacyPolicyContent || "";
+  const privacyPolicyContent = policyData?.privacyContent || "";
 
   if (isLoading) {
     return (

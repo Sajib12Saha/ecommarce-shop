@@ -14,7 +14,9 @@ export const ReturnPolicyClient = () => {
   );
 
   const policyData = data?.data;
-  const returnPolicyContent = policyData?.returnPolicyContent || "";
+  const returnPolicyContent = policyData?.returnContent || "";
+
+ 
 
   if (isLoading) {
     return (
