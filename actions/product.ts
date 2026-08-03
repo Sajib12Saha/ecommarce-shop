@@ -15,6 +15,7 @@ export type dbProductwihtoutAll = {
   gramUnit?:   Record<number, UnitPricing>;
     productType?:"BEST_SELLING" | "ALL_PRODUCT" | null;
     inStocks: number;
+    freeDelivery?: boolean | null;
     reviews: dbReview[];    
   
 }

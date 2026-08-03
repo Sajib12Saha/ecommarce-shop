@@ -3,7 +3,6 @@ import {  Open_Sans } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/headers/navbar";
 import { Footer } from "@/components/footer/footer";
-import { FeaturesSection } from "@/components/sections/features-section";
 import { Toaster } from "@/components/ui/sonner";
 import { UserProvider } from "@/contexts/UserContext";
 import { Cart } from "@/components/cart";
@@ -125,7 +124,7 @@ export default function RootLayout({
                 {children}
                 <Cart />
               </div>
-              <FeaturesSection />
+           
               <Footer />
             </main>
             <Toaster />

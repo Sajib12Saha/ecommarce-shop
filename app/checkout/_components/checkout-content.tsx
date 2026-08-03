@@ -3,7 +3,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { CartItem, useCart } from "@/hooks/use-store";
 import { useProducts } from "@/hooks/use-products";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { InvoiceOrder } from "./invoice-order";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -44,26 +43,11 @@ export const CheckoutContent = () => {
   const { data: deliveryChargeRes } = useDeliveryCharges();
   const charges = deliveryChargeRes?.data;
 
-const shippingMethods: ShippingMethod[] = useMemo(() => {
-    if (!charges) return [];
-    return [
-      { id: "insideDhaka", label: "Inside Dhaka", cost: charges.insideDhaka ?? 0 },
-      { id: "outsideDhaka", label: "Outside Dhaka", cost: charges.outsideDhaka ?? 0 },
-      { id: "postOffice", label: "Post Office", cost: charges.postOffice ?? 0, disabled: true }, // 👈
-    ];
-  }, [charges]);
+
 
   const [shippingMethodId, setShippingMethodId] = useState<string>("");
 
-useEffect(() => {
-    if (shippingMethods.length > 0 && !shippingMethodId) {
-      const firstEnabled = shippingMethods.find((m) => !m.disabled);
-      if (firstEnabled) setShippingMethodId(firstEnabled.id);
-    }
-  }, [shippingMethods, shippingMethodId]);
 
-  const selectedShipping =
-    shippingMethods.find((m) => m.id === shippingMethodId) ?? shippingMethods[0] ?? { id: "", label: "", cost: 0 };
 
   const [fbp, setFbp] = useState<string | null>(null);
   const [fbc, setFbc] = useState<string | null>(null);
@@ -164,6 +148,34 @@ useEffect(() => {
     return cartItems;
   }, [productId, products, cartItems, qty, unitParam]);
 
+const hasFreeDelivery = useMemo(() => {
+  if (checkoutItems.length === 0) return false;
+  return checkoutItems.some((item) => item.freeDelivery === true);
+}, [checkoutItems]);
+
+
+
+  const shippingMethods: ShippingMethod[] = useMemo(() => {
+    if (!charges) return [];
+    return [
+      { id: "insideDhaka", label: "Inside Dhaka", cost: charges.insideDhaka ?? 0 },
+      { id: "outsideDhaka", label: "Outside Dhaka", cost: charges.outsideDhaka ?? 0 },
+      { id: "postOffice", label: "Post Office", cost: charges.postOffice ?? 0, disabled: true }, // 👈
+    ];
+  }, [charges]);
+
+
+  useEffect(() => {
+    if (shippingMethods.length > 0 && !shippingMethodId) {
+      const firstEnabled = shippingMethods.find((m) => !m.disabled);
+      if (firstEnabled) setShippingMethodId(firstEnabled.id);
+    }
+  }, [shippingMethods, shippingMethodId]);
+
+  const selectedShipping =
+    shippingMethods.find((m) => m.id === shippingMethodId) ?? shippingMethods[0] ?? { id: "", label: "", cost: 0 };
+
+
   const { mutate: submitOrder, isPending, error } = useCustomMutation(
     ["post-order"],
     postOrder,
@@ -205,7 +217,9 @@ useEffect(() => {
     return 0;
   }, [appliedCoupon, subTotal, totalDiscount]);
 
-  const shippingCost = checkoutItems.length > 0 ? selectedShipping.cost : 0;
+    const shippingCost = checkoutItems.length > 0
+  ? (hasFreeDelivery ? 0 : selectedShipping.cost)
+  : 0;
 
   const total = subTotal - totalDiscount - couponDiscount + shippingCost;
 
@@ -442,6 +456,7 @@ useEffect(() => {
               shippingMethodId={shippingMethodId}
               setShippingMethodId={setShippingMethodId}
               shippingMethods={shippingMethods}
+              hasFreeDelivery={hasFreeDelivery}
             />
           )}
           {checkoutItems.length > 0 && (

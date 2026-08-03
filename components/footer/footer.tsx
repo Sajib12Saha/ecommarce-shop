@@ -6,6 +6,7 @@ import { siteMeta } from "@/data";
 import { useBusinessInfo } from "@/hooks/use-business-info";
 import { FacebookSvg, WhatsAppSvg, MessengerSvg, BRAND_COLORS } from "@/components/social-icons";
 import { FileText, Mail, MapPin, Phone } from "lucide-react";
+import { Separator } from "../ui/separator";
 
 export const  Footer = () =>  {
 
@@ -63,7 +64,7 @@ export const  Footer = () =>  {
 
   return (
     <footer className="bg-gray-50">
-      <div className="py-4 lg:py-1 px-6">
+      <div className="py-4 lg:py-6 px-6">
   
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
   
@@ -178,9 +179,10 @@ export const  Footer = () =>  {
   
         </div>
 
+<Separator className="my-4 bg-foreground/40"/>
 
-        <div className="border-t border-gray-400 my-10 pt-6 flex flex-col-reverse lg:flex-row items-center justify-between gap-x-6 ">
-          <p className="text-xs lg:text-sm text-muted-foreground text-center lg:text-left">
+        <div className="flex flex-col-reverse lg:flex-row items-center justify-between gap-x-6 ">
+          <p className="text-xs lg:text-sm  font-semibold text-center lg:text-left">
             © {year} {siteMeta.siteName}. All rights reserved.
           </p>
 
@@ -191,7 +193,7 @@ export const  Footer = () =>  {
                 src={p}
                 alt="Payment method"
                 width={70}
-                height={40}
+                height={70}
                 className="object-contain w-12 md:w-18"
               />
             ))}

@@ -1,15 +1,24 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+
 import { ProductCard } from "@/components/ui/product-card";
 import { Skeleton } from "@/components/ui/skeleton";
-import {  ArrowLeft, ArrowRight } from "lucide-react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 
 
 import {useState } from "react";
 import { dbProductwihtoutAll } from "@/actions/product";
 import { useCategoryProducts } from "@/hooks/use-categories";
+import { getPaginationRange } from "@/lib/utils";
 
 interface Props {
   sortBy?: "price" |  "createdAt";
@@ -36,6 +45,11 @@ export const CategoryProductsContent = ({
     maxPrice,
     
 });
+
+  const goToPage = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <>
@@ -82,27 +96,56 @@ export const CategoryProductsContent = ({
           </div>
 
           
-          <div className="flex justify-center items-center gap-4 pt-10">
-            <Button
-            size={"icon"}
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage((prev) => prev - 1)}
-            >
-               <ArrowLeft className="size-4"/>
-            </Button>
-
-            <span className="text-sm text-muted-foreground font-medium">
-              Page {currentPage} of {category.totalPages}
-            </span>
-
-            <Button
-            size={"icon"}
-              disabled={currentPage >= category.totalPages!}
-              onClick={() => setCurrentPage((prev) => prev + 1)}
-            >
-        <ArrowRight className="size-4"/>
-            </Button>
-          </div>
+            {category.totalPages! > 1 && (
+            <Pagination className="py-4 pt-10">
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (currentPage > 1) goToPage(currentPage - 1);
+                    }}
+                    className={currentPage <= 1 ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
+ 
+                {getPaginationRange(currentPage, category.totalPages!).map((page, idx) =>
+                  page === "ellipsis" ? (
+                    <PaginationItem key={`ellipsis-${idx}`}>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  ) : (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        href="#"
+                        isActive={page === currentPage}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          goToPage(page);
+                        }}
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  )
+                )}
+ 
+                <PaginationItem>
+                  <PaginationNext
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (currentPage < category.totalPages!) goToPage(currentPage + 1);
+                    }}
+                    className={
+                      currentPage >= category.totalPages! ? "pointer-events-none opacity-50" : ""
+                    }
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          )}
         </>
       ) : (
         <p className="text-center text-gray-600 py-20 h-screen">

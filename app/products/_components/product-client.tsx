@@ -453,7 +453,6 @@ const isInCart = cartItems.some((item) => item.cartKey === cartKey);
         <TabsList className="grid w-full grid-cols-3 max-w-md gap-4">
           <TabsTrigger value="description">Description</TabsTrigger>
           <TabsTrigger value="reviews">Reviews (0)</TabsTrigger>
-          <TabsTrigger value="comments">Comments (0)</TabsTrigger>
         </TabsList>
 
         <TabsContent value="description" className="mt-6">
@@ -478,16 +477,7 @@ const isInCart = cartItems.some((item) => item.cartKey === cartKey);
           </Card>
         </TabsContent>
 
-        <TabsContent value="comments">
-          <Card>
-            <CardContent className="p-6 flex flex-col items-center justify-center gap-4">
-              <div className="flex items-center justify-center bg-primary/20 size-14 rounded-full">
-                <MessageSquareMore className="size-8 stroke-primary" />
-              </div>
-              <p className="text-muted-foreground">No comments yet.</p>
-            </CardContent>
-          </Card>
-        </TabsContent>
+      
       </Tabs>
 
       <div className="mt-8">

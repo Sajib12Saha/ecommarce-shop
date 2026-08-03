@@ -11,6 +11,7 @@ import { siteMeta } from "@/data";
 import { dbProductwihtoutAll } from "@/actions/product";
 import { pushToDataLayer } from "@/lib/gtm";
 import { useState } from "react";
+import { Badge } from "./badge";
 
 interface ProductCardProps {
   product: dbProductwihtoutAll;
@@ -141,11 +142,16 @@ const isInCart = cartItems.some((item) => item.cartKey === cartKey);
                 </span>
               )}
             </div>
+            <div className="flex items-center gap-x-1">
             {hasDiscount && (
-              <span className="text-xs text-green-600 font-medium">
-                You save BDT {savingsAmount.toLocaleString()} ({discountPercentage}%)
+              <span className="text-green-600 font-semibold text-xs">
+                You Save BDT {savingsAmount.toLocaleString()} 
               </span>
             )}
+              {discountPercentage && (
+              <Badge className="bg-green-500 text-white text-xs">{discountPercentage}%</Badge>
+            )}
+          </div>
           </div>
 
           <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 w-full">

@@ -3,12 +3,19 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { useBlogs } from "@/hooks/use-blogs";
 import { dbBlog } from "@/types/type";
-import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, ArrowRight } from "lucide-react";
 import { BlogCard } from "./blog-card";
-
+import { getPaginationRange } from "@/lib/utils";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 
 interface Props {
@@ -19,8 +26,16 @@ export const BlogContent = ({ initialPage }: Props) => {
   const searchParams = useSearchParams();
   const pageStr = searchParams.get("page");
   const currentPage = Number(pageStr) || initialPage;
-
+  const router = useRouter(); 
+  const pathname = usePathname();  
   const { data: blogs, isLoading } = useBlogs(currentPage);
+
+    const goToPage = (page: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", String(page));
+    router.push(`${pathname}?${params.toString()}`);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <>
@@ -46,30 +61,57 @@ export const BlogContent = ({ initialPage }: Props) => {
             ))}
           </div>
 
-          {/* Pagination */}
-          <div className="flex justify-center items-center gap-4 pt-10">
-            <Link
-              href={`?page=${currentPage > 1 ? currentPage - 1 : 1}`}
-              className={`px-4 py-2 shadow rounded ${
-                currentPage === 1 ? "pointer-events-none opacity-50" : "hover:bg-primary transition"
-              }`}
-            >
-              <ArrowLeft className="size-4" />
-            </Link>
-
-            <span className="text-sm font-semibold text-muted-foreground">
-              Page {currentPage} of {blogs.totalPages}
-            </span>
-
-            <Link
-              href={`?page=${currentPage < blogs.totalPages ? currentPage + 1 : blogs.totalPages}`}
-              className={`px-4 py-2 shadow rounded ${
-                currentPage >= blogs.totalPages ? "pointer-events-none opacity-50" : "hover:bg-primary transition"
-              }`}
-            >
-              <ArrowRight className="size-4" />
-            </Link>
-          </div>
+   
+         {blogs.totalPages > 1 && (
+            <Pagination className="py-4 pt-10">
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (currentPage > 1) goToPage(currentPage - 1);
+                    }}
+                    className={currentPage <= 1 ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
+ 
+                {getPaginationRange(currentPage, blogs.totalPages).map((page, idx) =>
+                  page === "ellipsis" ? (
+                    <PaginationItem key={`ellipsis-${idx}`}>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  ) : (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        href="#"
+                        isActive={page === currentPage}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          goToPage(page);
+                        }}
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  )
+                )}
+ 
+                <PaginationItem>
+                  <PaginationNext
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (currentPage < blogs.totalPages) goToPage(currentPage + 1);
+                    }}
+                    className={
+                      currentPage >= blogs.totalPages ? "pointer-events-none opacity-50" : ""
+                    }
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          )}
          
       
         </>
