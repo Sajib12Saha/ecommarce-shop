@@ -21,6 +21,7 @@ import { motion } from "framer-motion";
 import { trackEcommerceEvent } from "@/lib/custom-tm";
 import { hasFiredEvent, markEventFired } from "@/lib/event-dedupe";
 import { FaBagShopping } from "react-icons/fa6";
+import { useBusinessInfo } from "@/hooks/use-business-info";
 
 interface Props {
   productUrl: string;
@@ -35,8 +36,7 @@ export const ProductClient = ({ productUrl, fbclid }: Props) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [muted, setMuted] = useState<boolean>(true);
   const router = useRouter();
-
-
+  const { data: businessInfo } = useBusinessInfo();
 
   const { data: product, isLoading } = useCustomQuery<ProductResponse>(
     ["product", productUrl],
@@ -267,79 +267,82 @@ const isInCart = cartItems.some((item) => item.cartKey === cartKey);
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-10 mb-4 lg:mb-12">
-        <div className="w-full">
-          <div className="relative w-full h-[400px] md:h-[600px] overflow-hidden">
-            {mergedMedia.map((mediaUrl, index) => {
-              const isVideo = /\.(mp4|webm|ogg)$/i.test(mediaUrl);
-              return (
-                <div
-                  key={index}
-                  className={`absolute inset-0 transition-opacity duration-500 ${
-                    currentIndex === index ? "opacity-100 z-10" : "opacity-0 z-0"
-                  }`}
-                >
-                  {isVideo ? (
-                    <div className="w-full h-full relative">
-                      <video
-                        ref={currentIndex === index ? videoRef : null}
-                        src={mediaUrl}
-                        autoPlay={currentIndex === index}
-                        muted={muted}
-                        loop
-                        playsInline
-                        disablePictureInPicture
-                        controlsList="nodownload nofullscreen noremoteplayback"
-                        className="w-full h-full object-contain"
-                      />
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={toggleMute}
-                        className="absolute bottom-4 right-4 bg-black/50 hover:bg-black/70 text-white rounded-full"
-                      >
-                        {muted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-                      </Button>
-                    </div>
-                  ) : (
-                    <Image
-                      src={mediaUrl}
-                      alt={product.data.name}
-                      width={800}
-                      height={800}
-                      className="w-full h-full object-contain"
-                    />
-                  )}
-                </div>
-              );
-            })}
-          </div>
+<div className="w-full flex items-start gap-2 md:gap-3">
 
-          <div className="flex gap-3 mt-4 overflow-x-auto flex-wrap">
-            {mergedMedia.map((mediaUrl, index) => {
-              const isVideo = /\.(mp4|webm|ogg)$/i.test(mediaUrl);
-              return (
-                <div
-                  key={index}
-                  onClick={() => setCurrentIndex(index)}
-                  className={`cursor-pointer flex-shrink-0 border transition relative h-14 md:h-24 aspect-square ${
-                    currentIndex === index
-                      ? "border-primary shadow-md"
-                      : "border-gray-200 hover:border-primary/50"
-                  }`}
-                >
-                  {isVideo ? (
-                    <div className="relative h-24 md:h-24 aspect-square">
-                      <video src={mediaUrl} muted className="w-full h-full object-cover" />
-                      <FaRegPlayCircle className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white text-xl md:text-2xl pointer-events-none" />
-                    </div>
-                  ) : (
-                    <Image src={mediaUrl} alt={product.data.name} fill className="object-cover" />
-                  )}
-                </div>
-              );
-            })}
-          </div>
+  
+  <div className="flex flex-col gap-2 md:gap-3 overflow-y-auto flex-shrink-0 max-h-full">
+    {mergedMedia.map((mediaUrl, index) => {
+      const isVideo = /\.(mp4|webm|ogg)$/i.test(mediaUrl);
+      return (
+        <div
+          key={index}
+          onClick={() => setCurrentIndex(index)}
+          className={`cursor-pointer flex-shrink-0 border transition relative aspect-square w-12 md:w-20 ${
+            currentIndex === index
+              ? "border-primary shadow-md"
+              : "border-gray-200 hover:border-primary/50"
+          }`}
+        >
+          {isVideo ? (
+            <div className="relative w-full h-full">
+              <video src={mediaUrl} muted className="w-full h-full object-cover" />
+              <FaRegPlayCircle className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white text-lg md:text-2xl pointer-events-none" />
+            </div>
+          ) : (
+            <Image src={mediaUrl} alt={product.data.name} fill className="object-cover" />
+          )}
         </div>
+      );
+    })}
+  </div>
+
+
+  <div className="relative flex-1 min-w-0 self-start aspect-square overflow-hidden">
+    {mergedMedia.map((mediaUrl, index) => {
+      const isVideo = /\.(mp4|webm|ogg)$/i.test(mediaUrl);
+      return (
+        <div
+          key={index}
+          className={`absolute inset-0 transition-opacity duration-500 ${
+            currentIndex === index ? "opacity-100 z-10" : "opacity-0 z-0"
+          }`}
+        >
+          {isVideo ? (
+            <div className="w-full h-full relative">
+              <video
+                ref={currentIndex === index ? videoRef : null}
+                src={mediaUrl}
+                autoPlay={currentIndex === index}
+                muted={muted}
+                loop
+                playsInline
+                disablePictureInPicture
+                controlsList="nodownload nofullscreen noremoteplayback"
+                className="w-full h-full object-contain"
+              />
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleMute}
+                className="absolute bottom-4 right-4 bg-black/50 hover:bg-black/70 text-white rounded-full"
+              >
+                {muted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+              </Button>
+            </div>
+          ) : (
+            <Image
+              src={mediaUrl}
+              alt={product.data.name}
+              width={800}
+              height={800}
+              className="w-full h-full object-contain"
+            />
+          )}
+        </div>
+      );
+    })}
+  </div>
+</div>
 
         <div className="space-y-6">
           <h1 className="text-3xl font-bold">{product.data.name}</h1>
@@ -416,17 +419,17 @@ const isInCart = cartItems.some((item) => item.cartKey === cartKey);
              <span className="mr-2"> <FaBagShopping className="w-4 h-4"/></span> Order Now
           </motion.button>
             <motion.button
-              onClick={() => window.open("https://wa.me/8801516194716?text=হ্যালো, আমি একটি পণ্য অর্ডার করতে চাই।", "_blank")}
+              onClick={() => window.open(`https://wa.me/+88${businessInfo?.data?.whatsappNumber}?text=${encodeURIComponent("হ্যালো, আমি একটি পণ্য অর্ডার করতে চাই।")}`, "_blank")}
               className="flex items-center gap-x-2 text-sm font-semibold bg-gradient-to-bl from-green-500 to-green-800 h-10 p-1 flex-1 justify-center rounded-md cursor-pointer text-white"
             >
-              <Image src="/icons/whatsapp.svg" alt="Whatsapp" height={25} width={25} className="object-contain" />
+              <Image src="/icons/whatsapp.svg" alt="Whatsapp" height={20} width={20} className="object-contain hidden md:block" />
               Chat with WhatsApp
             </motion.button>
             <motion.button
-              onClick={() => window.open("https://m.me/hillorashop?ref=order_now", "_blank")}
+              onClick={() => window.open(`https://m.me/${businessInfo?.data?.messengerUsername}?ref=order_now`, "_blank")}
               className="flex items-center gap-x-2 text-sm font-semibold bg-gradient-to-bl from-blue-600 to-pink-600 h-10 p-1 flex-1 justify-center rounded-md cursor-pointer text-white"
             >
-              <Image src="/icons/messenger.svg.webp" alt="Messenger" height={25} width={25} className="object-contain" />
+              <Image src="/icons/messenger.svg.webp" alt="Messenger" height={20} width={20} className="object-contain hidden md:block" />
               Chat with Messenger
             </motion.button>
           </div>

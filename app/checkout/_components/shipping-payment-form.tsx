@@ -15,6 +15,12 @@ import { cn } from "@/lib/utils";
 import { CiDeliveryTruck } from "react-icons/ci";
 import { FaBagShopping } from "react-icons/fa6";
 import Link from "next/link";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 export const shippingSchema = z.object({
   orderFor:z.string(),
@@ -120,19 +126,29 @@ const orderForOptions = [
         />
 </div>
 
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <CustomForm
-              field={field}
-              fieldType="input"
-              inputType="email"
-              label=""
-              placeHolder="example@gmail.com (optional)"
-            />
-          )}
-        />
+ <Accordion type="single" collapsible className="rounded-xl border shadow-sm">
+  <AccordionItem value="email" className="border-none">
+    <AccordionTrigger className="px-4 py-3 hover:no-underline">
+      <span className="text-sm font-medium">Add Email (Optional)</span>
+    </AccordionTrigger>
+    <AccordionContent className="px-4 py-4">
+      <FormField
+        control={form.control}
+        name="email"
+        render={({ field }) => (
+          <CustomForm
+            field={field}
+            fieldType="input"
+            inputType="email"
+            label=""
+            placeHolder="example@gmail.com (optional)"
+          />
+        )}
+      />
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>
+
         <FormField
           control={form.control}
           name="address"
@@ -187,18 +203,27 @@ const orderForOptions = [
 
         </div>
 
-        <FormField
-          control={form.control}
-          name="specialNote"
-          render={({ field }) => (
-            <CustomForm
-              field={field}
-              fieldType="textarea"
-              label=""
-              placeHolder="Special note for your order (optional)"
-            />
-          )}
-        />
+<Accordion type="single" collapsible className="rounded-xl border shadow-sm">
+  <AccordionItem value="special-note" className="border-none">
+    <AccordionTrigger className="px-4 py-3 hover:no-underline">
+      <span className="text-sm font-medium">Add Special Note (Optional)</span>
+    </AccordionTrigger>
+    <AccordionContent className="px-4 py-4">
+      <FormField
+        control={form.control}
+        name="specialNote"
+        render={({ field }) => (
+          <CustomForm
+            field={field}
+            fieldType="textarea"
+            label=""
+            placeHolder="Special note for your order (optional)"
+          />
+        )}
+      />
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>
 
         <RadioGroup
           value={selectedPayment}
