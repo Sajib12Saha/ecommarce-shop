@@ -93,6 +93,7 @@ export type dbProduct = {
   productImage: string;
   gallery: string[];
   productType?:"BEST_SELLING" | "ALL_PRODUCT" | null;
+  freeDelivery?: boolean | null;
   lastBestSellingAt?: Date | null;  
   price: number;
   discountPrice?: number;

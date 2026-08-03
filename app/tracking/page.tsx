@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,8 +15,9 @@ import { dbOrder } from "@/types/type";
 import { getOrders } from "@/actions/order";
 import { Zap } from "lucide-react";
 import { OrderTimeline } from "./_components/order-timeline";
+import { useSearchParams } from "next/navigation";
 
-// Zod schema
+
 const trackSchema = z.object({
   orderId: z.string().min(1, "Order ID is required"),
 });
@@ -26,18 +27,27 @@ type TrackFormValues = z.infer<typeof trackSchema>;
 const TrackingPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [order, setOrder] = useState<dbOrder | null>(null);
+  const  searchParams  = useSearchParams();
+  const orderIdParam = searchParams.get("orderId");
 
   const form = useForm<TrackFormValues>({
     resolver: zodResolver(trackSchema),
     defaultValues: { orderId: "" },
   });
 
+
+
+  useEffect(() => {
+    if (orderIdParam) {
+      form.reset({ orderId: orderIdParam });
+      onSubmit({ orderId: orderIdParam });
+    }
+    
+  }, [orderIdParam]);
+
   const onSubmit = async (values: TrackFormValues) => {
     setIsLoading(true);
     setOrder(null);
-
-   
-
     try {
       let page = 1;
       let found = false;

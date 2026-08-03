@@ -260,10 +260,15 @@ const isInCart = cartItems.some((item) => item.cartKey === cartKey);
 
   return (
     <>
-      <div className="mb-6">
+      <div className="mb-6 flex w-full items-center justify-between">
         <Badge variant="secondary" className="text-xs px-3 py-1">
           Product ID: {product.data.productId}
         </Badge>
+        {product.data.freeDelivery && (
+          <Badge  className="text-sm font-semibold h-8 w-auto px-3 py-1 bg-green-500 text-white uppercase">
+            Free Delivery
+          </Badge>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-10 mb-4 lg:mb-12">
@@ -344,7 +349,7 @@ const isInCart = cartItems.some((item) => item.cartKey === cartKey);
   </div>
 </div>
 
-        <div className="space-y-6">
+        <div className="space-y-2 lg:space-y-4">
           <h1 className="text-3xl font-bold">{product.data.name}</h1>
 
           {hasUnits && (
@@ -365,7 +370,8 @@ const isInCart = cartItems.some((item) => item.cartKey === cartKey);
             </div>
           )}
 
-          <div className="flex items-center gap-3">
+<div className="space-y-0.5 lg:space-y-1">
+    <div className="flex items-center gap-x-3">
             <span className="text-3xl font-extrabold">BDT {displayPrice?.toLocaleString()}</span>
             {hasDiscount && (
               <span className="line-through text-muted-foreground text-lg">
@@ -377,21 +383,26 @@ const isInCart = cartItems.some((item) => item.cartKey === cartKey);
             )}
           </div>
 
-          <div className="flex flex-row md:flex-col items-center justify-between md:items-start w-full">
+          <div className="flex items-center gap-x-3">
             {hasDiscount && (
-              <span className="text-green-600 font-medium">
-                You save BDT {savingsAmount.toLocaleString()} ({discountPercentage}%)
+              <span className="text-green-600 font-semibold text-sm">
+                You Save BDT {savingsAmount.toLocaleString()} 
               </span>
             )}
-            <Badge className="bg-green-600 p-1">{product.data.category?.name}</Badge>
+              {discountPercentage && (
+              <Badge className="bg-green-500 text-white text-xs">{discountPercentage}%</Badge>
+            )}
           </div>
+</div>
+      
 
+      <Badge className="bg-green-600 p-2">{product.data.category?.name}</Badge>
           <div className="flex items-center gap-x-2">
-            <div className="flex items-center gap-3 max-w-1/3 flex-1">
+            <div className="flex items-center gap-x-3 max-w-1/3 flex-1">
               <Button onClick={() => setQuantity((q) => Math.max(q - 1, 1))} className="w-7 flex-1">
                 <MinusIcon />
               </Button>
-              <p className="text-sm font-medium">{quantity}</p>
+              <p className="text-lg lg:text-xl font-bold">{quantity}</p>
               <Button onClick={() => setQuantity((q) => q + 1)} className="w-7 flex-1">
                 <PlusIcon />
               </Button>
