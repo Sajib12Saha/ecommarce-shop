@@ -189,7 +189,7 @@ export const InvoiceOrder = ({ order, hideButton = false }: Props) => {
           </div>
         </div>
 
-        {/* Customer & Payment Info */}
+      
         <div
           style={{
             display: "flex",
@@ -258,7 +258,7 @@ export const InvoiceOrder = ({ order, hideButton = false }: Props) => {
           </div>
         )}
 
-        {/* Order Items */}
+        
         <h4 style={{ fontWeight: "bold", marginBottom: "12px" }}>
           Order Items
         </h4>
@@ -334,7 +334,7 @@ export const InvoiceOrder = ({ order, hideButton = false }: Props) => {
           </table>
         </div>
 
-        {/* Totals */}
+        
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
           <div style={{ width: "30%" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -376,7 +376,7 @@ export const InvoiceOrder = ({ order, hideButton = false }: Props) => {
           </div>
         </div>
 
-        {/* Footer */}
+        
         <div
           style={{
             marginTop: "40px",
@@ -390,6 +390,8 @@ export const InvoiceOrder = ({ order, hideButton = false }: Props) => {
           </p>
           <p>For support, contact: support@hillora.com</p>
         </div>
+
+
       </div>
 
       {!hideButton && (

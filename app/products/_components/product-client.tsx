@@ -264,11 +264,6 @@ const isInCart = cartItems.some((item) => item.cartKey === cartKey);
         <Badge variant="secondary" className="text-xs px-3 py-1">
           Product ID: {product.data.productId}
         </Badge>
-        {product.data.freeDelivery && (
-          <Badge  className="text-sm font-semibold h-8 w-auto px-3 py-1 bg-green-500 text-white uppercase">
-            Free Delivery
-          </Badge>
-        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-10 mb-4 lg:mb-12">
@@ -395,8 +390,17 @@ const isInCart = cartItems.some((item) => item.cartKey === cartKey);
           </div>
 </div>
       
-
-      <Badge className="bg-green-600 p-2">{product.data.category?.name}</Badge>
+<div className="flex items-center gap-x-2">
+  <div className="text-sm font-semibold  px-3 py-2 bg-primary text-white  rounded-sm">
+{product.data.category?.name}
+  </div>
+          {product.data.freeDelivery && (
+          <div  className="text-sm font-semibold  px-3 py-2 bg-green-500 text-white uppercase rounded-sm">
+            Free Delivery
+          </div>
+        )}
+</div>
+     
           <div className="flex items-center gap-x-2">
             <div className="flex items-center gap-x-3 max-w-1/3 flex-1">
               <Button onClick={() => setQuantity((q) => Math.max(q - 1, 1))} className="w-7 flex-1">

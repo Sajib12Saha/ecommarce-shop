@@ -11,7 +11,7 @@ export interface AddressOption {
   value: string;
 }
 
-export function useAddressSuggestion(language?: string) {
+export function useAddressSuggestion() {
   const [selectedZilla, setSelectedZilla] = useState<string>("");
 
   const zillaOptions: AddressOption[] = useMemo(

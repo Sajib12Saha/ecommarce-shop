@@ -28,9 +28,8 @@ export const shippingSchema = z.object({
   mobileNumber: z
     .string()
     .regex(/^(?:\+88)?01[3-9]\d{8}$/, "একটি সঠিক মোবাইল নাম্বার লিখুন"),
-  email: z.string().email("সঠিক ইমেইল লিখুন").optional().or(z.literal("")),
   address: z.string().min(5, "ঠিকানা লিখুন"),
-  zilla: z.string().min(1, "জেলা নির্বাচন করুন"),
+  zilla: z.string().optional(),
   thana: z.string().optional(),
   specialNote: z.string().max(300, "সর্বোচ্চ ৩০০ অক্ষর").optional(),
   agreeToReturnPolicy: z.boolean().refine((val) => val === true, {
@@ -126,28 +125,7 @@ const orderForOptions = [
         />
 </div>
 
- <Accordion type="single" collapsible className="rounded-xl border shadow-sm">
-  <AccordionItem value="email" className="border-none">
-    <AccordionTrigger className="px-4 py-3 hover:no-underline">
-      <span className="text-sm font-medium">Add Email (Optional)</span>
-    </AccordionTrigger>
-    <AccordionContent className="px-4 py-4">
-      <FormField
-        control={form.control}
-        name="email"
-        render={({ field }) => (
-          <CustomForm
-            field={field}
-            fieldType="input"
-            inputType="email"
-            label=""
-            placeHolder="example@gmail.com (optional)"
-          />
-        )}
-      />
-    </AccordionContent>
-  </AccordionItem>
-</Accordion>
+
 
         <FormField
           control={form.control}

@@ -12,6 +12,7 @@ import { dbProductwihtoutAll } from "@/actions/product";
 import { pushToDataLayer } from "@/lib/gtm";
 import { useState } from "react";
 import { Badge } from "./badge";
+import { Truck } from "lucide-react";
 
 interface ProductCardProps {
   product: dbProductwihtoutAll;
@@ -33,6 +34,7 @@ export function ProductCard({ product, index }: ProductCardProps) {
     kgUnit,
     gramUnit,
     piecesUnit,
+    freeDelivery,
   } = product;
 
   const router = useRouter();
@@ -100,13 +102,21 @@ const isInCart = cartItems.some((item) => item.cartKey === cartKey);
               priority={index < 12}       
               loading={index < 12 ? "eager" : "lazy"}  
             />
-            <div
-              className={`absolute top-0 right-0 text-xs px-2 py-1 font-semibold shadow-md ${
-                inStocks > 0 ? "bg-green-500 text-white" : "bg-red-500 text-white"
-              }`}
-            >
-              {inStocks > 0 ? `${inStocks} Stock` : "Out Stock"}
-            </div>
+
+                    {discountPercentage && (
+                      <div className="absolute top-2 left-2 text-[10px] font-semibold  px-2 py-1 bg-green-500 text-white  rounded-xs">
+                       {discountPercentage}% off
+                      </div>
+                  
+                        )}
+                    {freeDelivery && (
+                      <div  className="absolute top-2 right-2 text-[10px] font-semibold  px-2 py-1 bg-green-500 text-white uppercase rounded-xs">
+                            Free Delivery
+                      </div>
+                    )}
+
+
+
           </div>
         </Link>
 
@@ -142,16 +152,7 @@ const isInCart = cartItems.some((item) => item.cartKey === cartKey);
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-x-1">
-            {hasDiscount && (
-              <span className="text-green-600 font-semibold text-xs">
-                You Save BDT {savingsAmount.toLocaleString()} 
-              </span>
-            )}
-              {discountPercentage && (
-              <Badge className="bg-green-500 text-white text-xs">{discountPercentage}%</Badge>
-            )}
-          </div>
+ 
           </div>
 
           <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 w-full">

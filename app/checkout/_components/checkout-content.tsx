@@ -160,7 +160,7 @@ const hasFreeDelivery = useMemo(() => {
     return [
       { id: "insideDhaka", label: "Inside Dhaka", cost: charges.insideDhaka ?? 0 },
       { id: "outsideDhaka", label: "Outside Dhaka", cost: charges.outsideDhaka ?? 0 },
-      { id: "postOffice", label: "Post Office", cost: charges.postOffice ?? 0, disabled: true }, // 👈
+
     ];
   }, [charges]);
 
@@ -326,7 +326,6 @@ const hasFreeDelivery = useMemo(() => {
       name:user?.name || "",
       mobileNumber: user?.mobileNumber || "",
       address: user?.address || "",
-      email:"",
       zilla:"",
       thana:"",
       specialNote:"",
@@ -342,7 +341,6 @@ const hasFreeDelivery = useMemo(() => {
         name:user?.name || "",
         mobileNumber: user.mobileNumber || "",
         address: user.address || "",
-        email:"",
         zilla:"",
         thana:"",
         specialNote:"",
@@ -407,7 +405,6 @@ const hasFreeDelivery = useMemo(() => {
       awc,
       name: data.name,
       mobileNumber: data.mobileNumber,
-      email:data.email,
       orderFor:data.orderFor,
       zilla: data.zilla,
       thana: data.thana,
