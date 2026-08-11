@@ -67,8 +67,12 @@ export const CouponInput: React.FC<CouponInputProps> = ({
       return;
     }
 
+
     const categoryIds = match.categories.map((c) => c.categoryId);
     const appliesToAllCategories = categoryIds.length === 0;
+   const checkoutCategoryId =   checkoutItems.map((i)=> i.categoryId)
+    console.log(checkoutCategoryId, categoryIds)
+
     const hasEligibleItem =
       appliesToAllCategories ||
       checkoutItems.some((item) => categoryIds.includes(item.categoryId));

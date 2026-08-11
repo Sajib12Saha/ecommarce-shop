@@ -57,6 +57,7 @@ export const getProducts = async (
 
   if (!res.ok) throw new Error("Failed to load Products");
 
+
   return await res.json();
 };
 
