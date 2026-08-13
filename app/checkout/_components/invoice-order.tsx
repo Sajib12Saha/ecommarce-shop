@@ -388,7 +388,7 @@ export const InvoiceOrder = ({ order, hideButton = false }: Props) => {
           <p>
             Thank you for shopping with <strong>{siteMeta.siteName}</strong>
           </p>
-          <p>For support, contact: support@hillora.com</p>
+          <p>For support, contact: support@hillorabd.com</p>
         </div>
 
 
