@@ -119,7 +119,7 @@ export function BestSellingProducts() {
   md:auto-cols-[33.333%]
   lg:auto-cols-[25%]
   xl:auto-cols-[20%]
-    gap-4 
+   
     px-4 sm:px-8 lg:px-10 
     py-2
 
