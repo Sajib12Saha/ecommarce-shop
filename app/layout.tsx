@@ -13,7 +13,7 @@ import Script from "next/script";
 import { StyleMobileFooterNavbar } from "@/components/footer/style-mobile-footer-navbar";
 import { TrackingProvider } from "@/provider/tracking-provider";
 import { FloatingContactIcons } from "@/components/footer/floating-contact-button";
-import { BlogsSection } from "@/components/sections/blogs-section";
+
 
 
 
@@ -125,7 +125,6 @@ export default function RootLayout({
                 {children}
                 <Cart />
               </div>
-           <BlogsSection/>
               <Footer />
             </main>
             <Toaster />

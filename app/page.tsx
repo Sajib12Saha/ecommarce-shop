@@ -5,6 +5,7 @@ import { PromotionalBanners } from "@/components/sections/promotional-banners"
 import { TopCategories } from "@/components/sections/top-categories"
 import { AllProducts } from "@/components/sections/all-products"
 import { BestSellingProducts } from "@/components/sections/best-selling-products"
+import { BlogsSection } from "@/components/sections/blogs-section"
 
 
 export default async function  HomePage () {
@@ -17,6 +18,7 @@ export default async function  HomePage () {
       <TopCategories/>
       <PromotionalBanners />
       <AllProducts/>
+        <BlogsSection/>
     </div>
   )
 }
